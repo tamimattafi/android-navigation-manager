@@ -7,23 +7,26 @@ A Dagger2 Based library for easy navigation between fragments.
 
 1- Add this to your Project level build.gradle file:
 
-    allprojects {
-        repositories {
-			  ...
-		  	maven { url 'https://jitpack.io' }
-        }
+```gradle
+allprojects {
+    repositories {
+	maven { url 'https://jitpack.io' }
     }
-  
+}
+```
   2- Add this to your dependencies in your App level build.gradle file:
-  
-    dependencies {
-	        implementation 'com.github.tamimattafi:NavigationManager:Tag'
-    }
+
+```gradle
+dependencies {
+	implementation 'com.github.tamimattafi:NavigationManager:Tag'
+}
+```
 
 **2- Implementation**:
 
 1- Make your host activity extend **NavigationActivity**: 
 
+```kotlin
     class AppActivity : NavigationActivity() {
 
         @Inject
@@ -37,7 +40,7 @@ A Dagger2 Based library for easy navigation between fragments.
         }
 
     }
-   
+```
 **- layoutId**: activity's layout.
 
 **- rootId**: the view that should be replaced on interaction such as FrameLayout.
@@ -47,6 +50,9 @@ A Dagger2 Based library for easy navigation between fragments.
 
 2- Make your fragments extend **NavigationContract.NavigationFragment()**:
 
+
+
+```kotlin
     class AddRoutineFragment : NavigationContract.NavigationFragment(), View {
 
         @Inject
@@ -57,6 +63,7 @@ A Dagger2 Based library for easy navigation between fragments.
         
         ...
     }
+```    
     
 **- fragmentName**: fragment backstack's name.
 
@@ -64,6 +71,7 @@ A Dagger2 Based library for easy navigation between fragments.
 
 3- Provide NavigationManager, Activity and Context to your fragments using Dagger2:
 
+```kotlin
       @Module
       abstract class ActivityModule {
 
@@ -82,12 +90,13 @@ A Dagger2 Based library for easy navigation between fragments.
           ...
           
       }
-     
+```
      
 **You can now start navigating!**
 
 - **Available NavigationManager methods:**:
 
+```kotlin
         interface NavigationManager {
         
               //Clears previous backstack and attachs a new fragment as base fragment
@@ -118,10 +127,11 @@ A Dagger2 Based library for easy navigation between fragments.
               //Requests the activity to restart
               fun requestRestart()
           }
-          
+```
           
 - **Available NavigationFragment behaviours**:
 
+```kotlin
           //When implemented by the current visible fragment, any back press will call its onBackPressed instead of activity's one.
 	  //Returning true will trigger activity's on backpress, returning false will not.
           interface BackPressController {
@@ -138,6 +148,8 @@ A Dagger2 Based library for easy navigation between fragments.
           interface ActivityResultReceiver {
               fun onReceiveActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
           }
-          
+	  
+	  
+```
           
 # Happy coding!
