@@ -18,7 +18,7 @@ allprojects {
 
 ```gradle
 dependencies {
-	implementation 'com.github.tamimattafi:NavigationManager:Tag'
+    implementation 'com.github.tamimattafi:NavigationManager:1.0.1'
 }
 ```
 
@@ -27,19 +27,19 @@ dependencies {
 1- Make your host activity extend **NavigationActivity**: 
 
 ```kotlin
-    class AppActivity : NavigationActivity() {
+class AppActivity : NavigationActivity() {
 
-        @Inject
-        lateinit var launcher: Launcher
+	@Inject
+	lateinit var launcher: Launcher
 
-        override val layoutId: Int = R.layout.activity_main
-        override var rootId: Int = R.id.root
+	override val layoutId: Int = R.layout.activity_main
+	override var rootId: Int = R.id.root
 
-        override fun onActivityCreated(savedInstanceState: Bundle?) {
-            requestAttachBaseScreen(launcher.getLaunchFragment())
-        }
+	override fun onActivityCreated(savedInstanceState: Bundle?) {
+		requestAttachBaseScreen(launcher.getLaunchFragment())
+	}
 
-    }
+}
 ```
 **- layoutId**: activity's layout.
 
@@ -53,16 +53,16 @@ dependencies {
 
 
 ```kotlin
-    class AddRoutineFragment : NavigationContract.NavigationFragment(), View {
+class AddRoutineFragment : NavigationContract.NavigationFragment(), View {
 
-        @Inject
-        lateinit var presenter: Presenter
+	@Inject
+	lateinit var presenter: Presenter
 
-        override var fragmentName: String = "add-routine-fragment"
-        override val layoutId: Int = R.layout.fragment_add_routine
+	override var fragmentName: String = "add-routine-fragment"
+	override val layoutId: Int = R.layout.fragment_add_routine
         
         ...
-    }
+}
 ```    
     
 **- fragmentName**: fragment backstack's name.
@@ -72,24 +72,24 @@ dependencies {
 3- Provide NavigationManager, Activity and Context to your fragments using Dagger2:
 
 ```kotlin
-      @Module
-      abstract class ActivityModule {
+@Module
+abstract class ActivityModule {
 
-          @ContributesAndroidInjector(modules = [MainFragments::class])
-          abstract fun mainActivity(): AppActivity
+	@ContributesAndroidInjector(modules = [MainFragments::class])
+	abstract fun mainActivity(): AppActivity
 
-          @Binds
-          abstract fun bindNavigationManager(mainActivity: AppActivity): NavigationContract.NavigationManager
+	@Binds
+	abstract fun bindNavigationManager(mainActivity: AppActivity): NavigationContract.NavigationManager
 
-          @Binds
-          abstract fun bindActivity(mainActivity: AppActivity): Activity
-          
-          @Binds
-          abstract fun bindContext(mainActivity: AppActivity): Context
-        
-          ...
-          
-      }
+	@Binds
+	abstract fun bindActivity(mainActivity: AppActivity): Activity
+
+	@Binds
+	abstract fun bindContext(mainActivity: AppActivity): Context
+
+	...
+
+}
 ```
      
 **You can now start navigating!**
@@ -97,57 +97,63 @@ dependencies {
 - **Available NavigationManager methods:**:
 
 ```kotlin
-        interface NavigationManager {
+interface NavigationManager {
         
-              //Clears previous backstack and attachs a new fragment as base fragment
-              fun requestAttachBaseScreen(fragment: NavigationFragment)
-              
-              //Slides a fragment from the left added to the backstack on the base fragment
-              fun requestSlideLeftScreen(fragment: NavigationFragment)
-              
-              //Slides a fragment from the right added to the backstack over the base fragment
-              fun requestSlideRightScreen(fragment: NavigationFragment)
-              
-              //Fades a fragment added to the backstack over the base fragment
-              fun requestFadeInScreen(fragment: NavigationFragment)
-              
-              //Attaches a fragment without animation added to the backstack over the base fragment
-              fun requestAttachScreen(fragment: NavigationFragment)
-              
-              //Requests the activity to invoke back button
-              fun requestBackPress()
-              
-              //Starts an activity for result handled by the resultReceiver
-              fun requestActivityForResult(
-                  resultReceiver: ActivityResultReceiver,
-                  intent: Intent,
-                  requestCode: Int
-              )
-              
-              //Requests the activity to restart
-              fun requestRestart()
-          }
+	//Clears previous backstack and attachs a new fragment as base fragment
+	fun requestAttachBaseScreen(fragment: NavigationFragment)
+
+	//Slides a fragment from the left added to the backstack on the base fragment
+	fun requestSlideLeftScreen(fragment: NavigationFragment)
+
+	//Slides a fragment from the right added to the backstack over the base fragment
+	fun requestSlideRightScreen(fragment: NavigationFragment)
+
+	//Fades a fragment added to the backstack over the base fragment
+	fun requestFadeInScreen(fragment: NavigationFragment)
+
+	//Attaches a fragment without animation added to the backstack over the base fragment
+	fun requestAttachScreen(fragment: NavigationFragment)
+
+	//Requests the activity to invoke back button
+	fun requestBackPress()
+
+	//Starts an activity for result handled by the resultReceiver
+	fun requestActivityForResult(
+		resultReceiver: ActivityResultReceiver,
+		intent: Intent,
+		requestCode: Int
+		)
+
+	//Requests the activity to restart
+	fun requestRestart()
+
+}
 ```
           
 - **Available NavigationFragment behaviours**:
 
 ```kotlin
-          //When implemented by the current visible fragment, any back press will call its onBackPressed instead of activity's one.
-	  //Returning true will trigger activity's on backpress, returning false will not.
-          interface BackPressController {
-              fun onBackPressed(): Boolean
-          }
 
-          //When implemented by the current visible fragment, it will be notified onAttach.
-          //becareful from using any view components because they might be still null when this method is called
-          interface SelectionListener {
-              fun onSelected()
-          }
+interface NavigationContract {
 
-          //Makes the fragment listen to ActivityResults
-          interface ActivityResultReceiver {
-              fun onReceiveActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
-          }
+	//When implemented by the current visible fragment, any back press will call its onBackPressed instead of activity's one.
+	//Returning true will trigger activity's on backpress, returning false will not.
+	interface BackPressController {
+		fun onBackPressed(): Boolean
+	}
+
+	//When implemented by the current visible fragment, it will be notified onAttach.
+	//becareful from using any view components because they might be still null when this method is called
+	interface SelectionListener {
+		fun onSelected()
+	}
+
+	//Makes the fragment listen to ActivityResults
+	interface ActivityResultReceiver {
+		fun onReceiveActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
+	}
+
+}
 	  
 	  
 ```
