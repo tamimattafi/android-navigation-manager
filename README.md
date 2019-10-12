@@ -122,7 +122,8 @@ A Dagger2 Based library for easy navigation between fragments.
           
 - **Available NavigationFragment behaviours**:
 
-          //When implemented by the current visible fragment, any back press will call its onBackPressed instead
+          //When implemented by the current visible fragment, any back press will call its onBackPressed instead of activity's one.
+	  //Returning true will trigger activity's on backpress, returning false will not.
           interface BackPressController {
               fun onBackPressed(): Boolean
           }
