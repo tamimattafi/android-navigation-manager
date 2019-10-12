@@ -1,4 +1,4 @@
-package com.tamimattafi.myscheduler.utils
+package com.tamimattafi.navigationmanager.utils
 
 import android.app.Activity
 import android.content.Context

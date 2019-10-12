@@ -2,7 +2,7 @@ package com.tamimattafi.navigationmanager.navigation
 
 import android.content.Intent
 import android.util.Log
-import com.tamimattafi.myscheduler.utils.KeyboardUtils
+import com.tamimattafi.navigationmanager.utils.KeyboardUtils
 import javax.inject.Inject
 
 
