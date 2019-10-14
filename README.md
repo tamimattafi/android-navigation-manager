@@ -157,5 +157,9 @@ interface NavigationContract {
 	  
 	  
 ```
-          
+# How to navigate?
+
+  - If you followed all steps correctly, you will have an instance of NavigationManager as navigationManager in every attached fragment.
+  - Calling navigationManager.yourMethod(YourFragment()) from a fragment or somewhere else will attach a new fragment to your screen.         
+
 # Happy coding!
