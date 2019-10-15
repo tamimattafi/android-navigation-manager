@@ -16,7 +16,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(),
     abstract var rootId: Int
 
 
-    abstract fun onActivityCreated(savedInstanceState: Bundle?)
+    abstract fun onViewCreated(savedInstanceState: Bundle?)
 
     private val currentFragment: Fragment?
         get() = supportFragmentManager.findFragmentById(rootId)
@@ -28,17 +28,15 @@ abstract class NavigationActivity : DaggerAppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        applyNewStyle()
+        onActivityCreated()
         setContentView(layoutId)
-        if (savedInstanceState == null) {
-            onActivityCreated(savedInstanceState)
-            supportFragmentManager.addOnBackStackChangedListener {
-                (currentFragment as? NavigationContract.SelectionListener)?.onSelected()
-            }
+        onViewCreated(savedInstanceState)
+        supportFragmentManager.addOnBackStackChangedListener {
+            (currentFragment as? NavigationContract.SelectionListener)?.onSelected()
         }
     }
 
-    open fun applyNewStyle() {}
+    open fun onActivityCreated() {}
 
     override fun requestAttachBaseScreen(fragment: NavigationContract.NavigationFragment) {
         supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
