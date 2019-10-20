@@ -41,6 +41,11 @@ interface NavigationContract {
         override fun onSelected() {
             Log.i(fragmentName, "Selected")
         }
+
+        fun restart() {
+            navigationManager.restartCurrent()
+        }
+
     }
 
     interface BackPressController {
