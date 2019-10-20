@@ -113,6 +113,9 @@ interface NavigationManager {
 
 	//Attaches a fragment without animation added to the backstack over the base fragment
 	fun requestAttachScreen(fragment: NavigationFragment)
+	
+	//Restarts the current screen (new instance)
+	fun restartCurrentScreen()
 
 	//Requests the activity to invoke back button
 	fun requestBackPress()
