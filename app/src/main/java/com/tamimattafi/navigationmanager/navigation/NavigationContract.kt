@@ -14,7 +14,7 @@ interface NavigationContract {
         fun requestSlideRightScreen(fragment: NavigationFragment)
         fun requestFadeInScreen(fragment: NavigationFragment)
         fun requestAttachScreen(fragment: NavigationFragment)
-        fun restartCurrent()
+        fun restartCurrentScreen()
         fun requestBackPress()
         fun requestActivityForResult(
             resultReceiver: ActivityResultReceiver,
@@ -43,7 +43,7 @@ interface NavigationContract {
         }
 
         fun restart() {
-            navigationManager.restartCurrent()
+            navigationManager.restartCurrentScreen()
         }
 
     }

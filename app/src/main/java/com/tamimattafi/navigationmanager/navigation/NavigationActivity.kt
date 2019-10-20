@@ -88,7 +88,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
         }
     }
 
-    override fun restartCurrent() {
+    override fun restartCurrentScreen() {
         (currentFragment as? NavigationFragment)?.let {
             supportFragmentManager.inTransaction {
                 remove(it)
