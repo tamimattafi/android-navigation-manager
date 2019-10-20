@@ -14,6 +14,7 @@ interface NavigationContract {
         fun requestSlideRightScreen(fragment: NavigationFragment)
         fun requestFadeInScreen(fragment: NavigationFragment)
         fun requestAttachScreen(fragment: NavigationFragment)
+        fun restartCurrent()
         fun requestBackPress()
         fun requestActivityForResult(
             resultReceiver: ActivityResultReceiver,

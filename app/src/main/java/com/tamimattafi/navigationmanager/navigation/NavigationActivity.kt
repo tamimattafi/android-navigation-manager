@@ -6,11 +6,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.tamimattafi.navigationmanager.R
+import com.tamimattafi.navigationmanager.navigation.NavigationContract.*
 import dagger.android.support.DaggerAppCompatActivity
 
 
-abstract class NavigationActivity : DaggerAppCompatActivity(),
-    NavigationContract.NavigationManager {
+abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager {
 
     abstract val layoutId: Int
     abstract var rootId: Int
@@ -24,7 +24,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(),
     private var baseFragment: Fragment? = null
 
     private var currentRequestCode: Int = -1
-    private var currentResultReceiver: NavigationContract.ActivityResultReceiver? = null
+    private var currentResultReceiver: ActivityResultReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,13 +32,13 @@ abstract class NavigationActivity : DaggerAppCompatActivity(),
         setContentView(layoutId)
         onViewCreated(savedInstanceState)
         supportFragmentManager.addOnBackStackChangedListener {
-            (currentFragment as? NavigationContract.SelectionListener)?.onSelected()
+            (currentFragment as? SelectionListener)?.onSelected()
         }
     }
 
     open fun onActivityCreated() {}
 
-    override fun requestAttachBaseScreen(fragment: NavigationContract.NavigationFragment) {
+    override fun requestAttachBaseScreen(fragment: NavigationFragment) {
         supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         supportFragmentManager.inTransaction {
             replace(rootId, fragment)
@@ -46,7 +46,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(),
         baseFragment = fragment
     }
 
-    override fun requestSlideLeftScreen(fragment: NavigationContract.NavigationFragment) {
+    override fun requestSlideLeftScreen(fragment: NavigationFragment) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 R.anim.enter,
@@ -58,7 +58,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(),
         }
     }
 
-    override fun requestSlideRightScreen(fragment: NavigationContract.NavigationFragment) {
+    override fun requestSlideRightScreen(fragment: NavigationFragment) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 R.anim.pop_enter,
@@ -70,7 +70,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(),
         }
     }
 
-    override fun requestFadeInScreen(fragment: NavigationContract.NavigationFragment) {
+    override fun requestFadeInScreen(fragment: NavigationFragment) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 android.R.anim.fade_in,
@@ -82,14 +82,23 @@ abstract class NavigationActivity : DaggerAppCompatActivity(),
         }
     }
 
-    override fun requestAttachScreen(fragment: NavigationContract.NavigationFragment) {
+    override fun requestAttachScreen(fragment: NavigationFragment) {
         supportFragmentManager.inTransaction {
             add(rootId, fragment).addToBackStack(fragment.fragmentName)
         }
     }
 
+    override fun restartCurrent() {
+        (currentFragment as? NavigationFragment)?.let {
+            supportFragmentManager.inTransaction {
+                remove(it)
+                add(rootId, it.javaClass.newInstance()).addToBackStack(it.fragmentName)
+            }
+        }
+    }
+
     override fun onBackPressed() {
-        (currentFragment as? NavigationContract.BackPressController)?.let {
+        (currentFragment as? BackPressController)?.let {
             if (it.onBackPressed()) {
                 super.onBackPressed()
             }
@@ -105,7 +114,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(),
     }
 
     override fun requestActivityForResult(
-        resultReceiver: NavigationContract.ActivityResultReceiver,
+        resultReceiver: ActivityResultReceiver,
         intent: Intent,
         requestCode: Int
     ) {
