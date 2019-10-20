@@ -90,9 +90,10 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
 
     override fun restartCurrentScreen() {
         (currentFragment as? NavigationFragment)?.let {
-            supportFragmentManager.inTransaction {
-                remove(it)
-                add(rootId, it.javaClass.newInstance()).addToBackStack(it.fragmentName)
+            with(supportFragmentManager) {
+                inTransaction { remove(it) }
+                popBackStack()
+                inTransaction { add(rootId, it.javaClass.newInstance()).addToBackStack(it.fragmentName) }
             }
         }
     }
