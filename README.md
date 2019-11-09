@@ -18,7 +18,7 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.tamimattafi:NavigationManager:1.0.4'
+    implementation 'com.github.tamimattafi:NavigationManager:1.0.6'
 }
 ```
 
