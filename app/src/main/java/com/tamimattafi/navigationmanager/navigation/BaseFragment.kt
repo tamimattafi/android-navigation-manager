@@ -12,19 +12,19 @@ import javax.inject.Inject
 abstract class BaseFragment : DaggerFragment() {
 
     abstract val layoutId: Int
+    protected lateinit var fragmentView: View
 
     @Inject
-    lateinit var appContext: Context
+    protected lateinit var appContext: Context
 
     @Inject
-    lateinit var appActivity: Activity
+    protected lateinit var appActivity: Activity
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View =
-        inflater.inflate(layoutId, container, false)
+    ): View = inflater.inflate(layoutId, container, false).also { fragmentView = it }
 
 
 }

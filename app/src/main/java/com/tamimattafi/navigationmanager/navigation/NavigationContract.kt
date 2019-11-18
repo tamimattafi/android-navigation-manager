@@ -1,9 +1,15 @@
 package com.tamimattafi.navigationmanager.navigation
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.util.Log
 import com.tamimattafi.navigationmanager.utils.KeyboardUtils
 import javax.inject.Inject
+import android.R
+import android.os.Bundle
+import android.view.ViewGroup
+import android.view.LayoutInflater
+import android.view.View
 
 
 interface NavigationContract {
@@ -33,6 +39,8 @@ interface NavigationContract {
 
         abstract var fragmentName: String
 
+        open var handleViewOrientation: Boolean = false
+
         override fun onDestroyView() {
             super.onDestroyView()
             KeyboardUtils.hide(context!!)
@@ -40,6 +48,18 @@ interface NavigationContract {
 
         override fun onSelected() {
             Log.i(fragmentName, "Selected")
+        }
+
+        override fun onConfigurationChanged(newConfig: Configuration) {
+            super.onConfigurationChanged(newConfig)
+            if (handleViewOrientation) populateViewForOrientation()
+        }
+
+        private fun populateViewForOrientation() {
+            (fragmentView as ViewGroup).apply {
+                removeAllViewsInLayout()
+                LayoutInflater.from(appActivity).inflate(layoutId, this)
+            }
         }
 
         fun restart() {
