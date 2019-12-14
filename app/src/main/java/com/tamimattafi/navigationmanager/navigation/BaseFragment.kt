@@ -20,6 +20,7 @@ abstract class BaseFragment : DaggerFragment() {
     @Inject
     protected lateinit var appActivity: Activity
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
