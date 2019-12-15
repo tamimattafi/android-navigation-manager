@@ -114,12 +114,11 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
         beginTransaction().func().commit()
     }
 
-    override fun requestActivityForResult(
-        resultReceiver: ActivityResultReceiver,
-        intent: Intent,
-        requestCode: Int
-    ) {
+    override fun setActivityReceiver(resultReceiver: ActivityResultReceiver) {
         this.currentResultReceiver = resultReceiver
+    }
+
+    override fun requestActivityForResult(intent: Intent, requestCode: Int) {
         this.currentRequestCode = requestCode
         startActivityForResult(intent, requestCode)
     }

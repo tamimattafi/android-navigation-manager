@@ -3,13 +3,10 @@ package com.tamimattafi.navigationmanager.navigation
 import android.content.Intent
 import android.content.res.Configuration
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import com.tamimattafi.navigationmanager.utils.KeyboardUtils
 import javax.inject.Inject
-import android.R
-import android.os.Bundle
-import android.view.ViewGroup
-import android.view.LayoutInflater
-import android.view.View
 
 
 interface NavigationContract {
@@ -22,11 +19,8 @@ interface NavigationContract {
         fun requestAttachScreen(fragment: NavigationFragment)
         fun restartCurrentScreen()
         fun requestBackPress()
-        fun requestActivityForResult(
-            resultReceiver: ActivityResultReceiver,
-            intent: Intent,
-            requestCode: Int
-        )
+        fun setActivityReceiver(resultReceiver: ActivityResultReceiver)
+        fun requestActivityForResult(intent: Intent, requestCode: Int)
 
         fun requestRestart()
     }
