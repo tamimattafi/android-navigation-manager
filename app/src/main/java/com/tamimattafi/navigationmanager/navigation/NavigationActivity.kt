@@ -23,7 +23,6 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
 
     private var baseFragment: Fragment? = null
 
-    private var currentRequestCode: Int = -1
     private var currentResultReceiver: ActivityResultReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,15 +118,12 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
     }
 
     override fun requestActivityForResult(intent: Intent, requestCode: Int) {
-        this.currentRequestCode = requestCode
         startActivityForResult(intent, requestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == currentRequestCode) {
-            currentResultReceiver?.onReceiveActivityResult(requestCode, resultCode, data)
-        }
+        currentResultReceiver?.onReceiveActivityResult(requestCode, resultCode, data)
     }
 
     override fun requestRestart() {

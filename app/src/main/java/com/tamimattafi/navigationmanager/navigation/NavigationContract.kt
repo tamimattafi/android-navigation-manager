@@ -21,7 +21,6 @@ interface NavigationContract {
         fun requestBackPress()
         fun setActivityReceiver(resultReceiver: ActivityResultReceiver)
         fun requestActivityForResult(intent: Intent, requestCode: Int)
-
         fun requestRestart()
     }
 
