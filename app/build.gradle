@@ -49,7 +49,7 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     //MVPKit
-    implementation 'com.github.tamimattafi:MvpKit:1.9.110'
+    implementation 'com.github.tamimattafi:android-mvpkit:1.9.110'
     //Utils
     implementation 'com.github.tamimattafi:android-utils:1.0.1'
 
