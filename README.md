@@ -18,7 +18,7 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.tamimattafi:NavigationManager:1.0.6'
+   implementation "com.github.tamimattafi:android-dagger-navigationmanager:&lastest_version"
 }
 ```
 
@@ -27,7 +27,7 @@ dependencies {
 1- Make your host activity extend **NavigationActivity**: 
 
 ```kotlin
-class AppActivity : NavigationActivity() {
+class AppActivity : DaggerNavigationActivity() {
 
 	@Inject
 	lateinit var launcher: Launcher
@@ -48,12 +48,12 @@ class AppActivity : NavigationActivity() {
 **- onActivityCreated(savedInstanceState: Bundle?)** is called after **setContentView(layoutId)**
 
 
-2- Make your fragments extend **NavigationContract.NavigationFragment()**:
+2- Make your fragments extend **DaggerNavigationFragment()**:
 
 
 
 ```kotlin
-class AddRoutineFragment : NavigationContract.NavigationFragment(), View {
+class AddRoutineFragment : DaggerNavigationFragment(), View {
 
 	@Inject
 	lateinit var presenter: Presenter
