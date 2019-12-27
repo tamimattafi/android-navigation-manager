@@ -1,4 +1,4 @@
-package com.tamimattafi.navigationmanager.navigation
+package com.tamimattafi.navigationmanager.navigation.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,11 +6,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.tamimattafi.navigationmanager.R
-import com.tamimattafi.navigationmanager.navigation.NavigationContract.*
+import com.tamimattafi.navigationmanager.navigation.DaggerNavigationContract.*
+import com.tamimattafi.navigationmanager.navigation.fragments.DaggerNavigationFragment
 import dagger.android.support.DaggerAppCompatActivity
 
 
-abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager {
+abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationManager {
 
     abstract val layoutId: Int
     abstract var rootId: Int
@@ -37,7 +38,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
 
     open fun onActivityCreated() {}
 
-    override fun requestAttachBaseScreen(fragment: NavigationFragment) {
+    override fun requestAttachBaseScreen(fragment: DaggerNavigationFragment) {
         supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         supportFragmentManager.inTransaction {
             replace(rootId, fragment)
@@ -45,7 +46,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
         baseFragment = fragment
     }
 
-    override fun requestSlideLeftScreen(fragment: NavigationFragment) {
+    override fun requestSlideLeftScreen(fragment: DaggerNavigationFragment) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 R.anim.enter,
@@ -57,7 +58,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
         }
     }
 
-    override fun requestSlideRightScreen(fragment: NavigationFragment) {
+    override fun requestSlideRightScreen(fragment: DaggerNavigationFragment) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 R.anim.pop_enter,
@@ -69,7 +70,7 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
         }
     }
 
-    override fun requestFadeInScreen(fragment: NavigationFragment) {
+    override fun requestFadeInScreen(fragment: DaggerNavigationFragment) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 android.R.anim.fade_in,
@@ -81,14 +82,14 @@ abstract class NavigationActivity : DaggerAppCompatActivity(), NavigationManager
         }
     }
 
-    override fun requestAttachScreen(fragment: NavigationFragment) {
+    override fun requestAttachScreen(fragment: DaggerNavigationFragment) {
         supportFragmentManager.inTransaction {
             add(rootId, fragment).addToBackStack(fragment.fragmentName)
         }
     }
 
     override fun restartCurrentScreen() {
-        (currentFragment as? NavigationFragment)?.let {
+        (currentFragment as? DaggerNavigationFragment)?.let {
             with(supportFragmentManager) {
                 inTransaction { remove(it) }
                 popBackStack()

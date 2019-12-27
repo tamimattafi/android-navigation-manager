@@ -1,4 +1,4 @@
-package com.tamimattafi.navigationmanager.navigation
+package com.tamimattafi.navigationmanager.navigation.fragments
 
 import android.app.Activity
 import android.content.Context
@@ -9,16 +9,16 @@ import android.view.ViewGroup
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
-abstract class BaseFragment : DaggerFragment() {
+abstract class DaggerBaseFragment : DaggerFragment() {
 
     abstract val layoutId: Int
     protected lateinit var fragmentView: View
 
     @Inject
-    protected lateinit var appContext: Context
+    protected lateinit var applicationContext: Context
 
     @Inject
-    protected lateinit var appActivity: Activity
+    protected lateinit var navigationActivity: Activity
 
 
     override fun onCreateView(
@@ -26,6 +26,5 @@ abstract class BaseFragment : DaggerFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(layoutId, container, false).also { fragmentView = it }
-
 
 }

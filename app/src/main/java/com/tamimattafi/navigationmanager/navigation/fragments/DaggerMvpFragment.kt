@@ -1,10 +1,9 @@
-package com.tamimattafi.navigationmanager.navigation
+package com.tamimattafi.navigationmanager.navigation.fragments
 
 import com.tamimattafi.mvp.MvpBaseContract
-import com.tamimattafi.navigationmanager.navigation.NavigationContract.NavigationFragment
 import javax.inject.Inject
 
-abstract class MvpFragment<P : MvpBaseContract.Presenter> : NavigationFragment() {
+abstract class DaggerMvpFragment<P : MvpBaseContract.Presenter> : DaggerNavigationFragment() {
 
     @Inject
     lateinit var presenter: P
