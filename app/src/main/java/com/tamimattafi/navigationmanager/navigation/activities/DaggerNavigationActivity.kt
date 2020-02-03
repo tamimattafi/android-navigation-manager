@@ -46,63 +46,56 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         baseFragment = fragment
     }
 
-    override fun requestSlideLeftScreen(fragment: DaggerNavigationFragment) {
+    override fun requestSlideLeftScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 R.anim.enter,
                 R.anim.exit,
                 R.anim.pop_enter,
                 R.anim.pop_exit
-            )
-            add(rootId, fragment).addToBackStack(fragment.fragmentName)
+            ).handleBackStack(fragment, addToBackStack)
         }
     }
 
-    override fun requestSlideRightScreen(fragment: DaggerNavigationFragment) {
+    override fun requestSlideRightScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 R.anim.pop_enter,
                 R.anim.pop_exit,
                 R.anim.enter,
                 R.anim.exit
-            )
-            add(rootId, fragment).addToBackStack(fragment.fragmentName)
+            ).handleBackStack(fragment, addToBackStack)
         }
     }
 
-    override fun requestFadeInScreen(fragment: DaggerNavigationFragment) {
+    override fun requestFadeInScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 android.R.anim.fade_in,
                 android.R.anim.fade_out,
                 android.R.anim.fade_in,
                 android.R.anim.fade_out
-            )
-            add(rootId, fragment).addToBackStack(fragment.fragmentName)
+            ).handleBackStack(fragment, addToBackStack)
         }
     }
 
-    override fun requestAttachScreen(fragment: DaggerNavigationFragment) {
+    override fun requestAttachScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean) {
         supportFragmentManager.inTransaction {
-            add(rootId, fragment).addToBackStack(fragment.fragmentName)
+            handleBackStack(fragment, addToBackStack)
         }
     }
 
     override fun restartCurrentScreen() {
         (currentFragment as? DaggerNavigationFragment)?.let {
-            with(supportFragmentManager) {
-                inTransaction { remove(it) }
-                popBackStack()
-                inTransaction { add(rootId, it.javaClass.newInstance()).addToBackStack(it.fragmentName) }
-            }
+            supportFragmentManager.inTransaction { remove(it) }
+                .apply { popBackStack() }
+                .inTransaction { add(rootId, it.javaClass.newInstance()).addToBackStack(it.fragmentName) }
         }
     }
 
     override fun onBackPressed() {
         (currentFragment as? BackPressController)?.let {
-            if (it.onBackPressed()) {
-                super.onBackPressed()
-            }
+            if (it.onBackPressed()) super.onBackPressed()
         } ?: super.onBackPressed()
     }
 
@@ -110,9 +103,8 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         onBackPressed()
     }
 
-    private inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
-        beginTransaction().func().commit()
-    }
+    private inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction): FragmentManager
+        = this.also { beginTransaction().func().commit() }
 
     override fun setActivityReceiver(resultReceiver: ActivityResultReceiver) {
         this.currentResultReceiver = resultReceiver
@@ -127,8 +119,18 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         currentResultReceiver?.onReceiveActivityResult(requestCode, resultCode, data)
     }
 
+    override fun finishScreen(fragment: DaggerNavigationFragment) {
+        if (currentFragment == fragment) requestBackPress()
+        else supportFragmentManager.inTransaction { remove(fragment) }
+            .popBackStack()
+
+    }
+
     override fun requestRestart() {
         finish()
         startActivity(intent)
     }
+
+    private fun FragmentTransaction.handleBackStack(fragment: DaggerNavigationFragment, addToBackStack: Boolean): FragmentTransaction
+            = if (addToBackStack) add(rootId, fragment).addToBackStack(fragment.fragmentName) else add(rootId, fragment)
 }

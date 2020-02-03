@@ -49,12 +49,12 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     //MVPKit
-    implementation 'com.github.tamimattafi:android-mvpkit:1.9.110'
+    implementation 'com.github.tamimattafi:android-mvpkit:1.9.132'
     //Utils
     implementation 'com.github.tamimattafi:android-utils:1.0.1'
 
     //Test
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
