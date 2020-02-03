@@ -13,7 +13,7 @@ interface DaggerNavigationContract {
         fun requestFadeInScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true)
         fun requestAttachScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true)
         fun restartCurrentScreen()
-        fun finishScreen(fragment: DaggerNavigationFragment)
+        fun removeScreen(fragment: DaggerNavigationFragment)
         fun requestBackPress()
         fun setActivityReceiver(resultReceiver: ActivityResultReceiver)
         fun requestActivityForResult(intent: Intent, requestCode: Int)

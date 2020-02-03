@@ -119,7 +119,7 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         currentResultReceiver?.onReceiveActivityResult(requestCode, resultCode, data)
     }
 
-    override fun finishScreen(fragment: DaggerNavigationFragment) {
+    override fun removeScreen(fragment: DaggerNavigationFragment) {
         if (currentFragment == fragment) requestBackPress()
         else supportFragmentManager.inTransaction { remove(fragment) }
     }

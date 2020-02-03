@@ -45,6 +45,6 @@ abstract class DaggerNavigationFragment : DaggerBaseFragment(),
     }
 
     fun finish() {
-        navigator.finishScreen(this)
+        navigator.removeScreen(this)
     }
 }
