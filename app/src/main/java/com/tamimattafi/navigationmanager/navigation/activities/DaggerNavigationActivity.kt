@@ -46,42 +46,42 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         baseFragment = fragment
     }
 
-    override fun requestSlideLeftScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean) {
+    override fun requestSlideLeftScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean, replace: Boolean) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 R.anim.enter,
                 R.anim.exit,
                 R.anim.pop_enter,
                 R.anim.pop_exit
-            ).handleBackStack(fragment, addToBackStack)
+            ).handleReplace(fragment, replace).handleBackStack(fragment, addToBackStack)
         }
     }
 
-    override fun requestSlideRightScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean) {
+    override fun requestSlideRightScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean, replace: Boolean) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 R.anim.pop_enter,
                 R.anim.pop_exit,
                 R.anim.enter,
                 R.anim.exit
-            ).handleBackStack(fragment, addToBackStack)
+            ).handleReplace(fragment, replace).handleBackStack(fragment, addToBackStack)
         }
     }
 
-    override fun requestFadeInScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean) {
+    override fun requestFadeInScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean, replace: Boolean) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
                 android.R.anim.fade_in,
                 android.R.anim.fade_out,
                 android.R.anim.fade_in,
                 android.R.anim.fade_out
-            ).handleBackStack(fragment, addToBackStack)
+            ).handleReplace(fragment, replace).handleBackStack(fragment, addToBackStack)
         }
     }
 
-    override fun requestAttachScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean) {
+    override fun requestAttachScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean, replace: Boolean) {
         supportFragmentManager.inTransaction {
-            handleBackStack(fragment, addToBackStack)
+            handleReplace(fragment, replace).handleBackStack(fragment, addToBackStack)
         }
     }
 
@@ -129,6 +129,9 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         startActivity(intent)
     }
 
+    private fun FragmentTransaction.handleReplace(fragment: DaggerNavigationFragment, replace: Boolean): FragmentTransaction
+            = if (replace) replace(rootId, fragment, fragment.fragmentName) else add(rootId, fragment, fragment.fragmentName)
+
     private fun FragmentTransaction.handleBackStack(fragment: DaggerNavigationFragment, addToBackStack: Boolean): FragmentTransaction
-            = if (addToBackStack) replace(rootId, fragment, fragment.fragmentName).addToBackStack(fragment.fragmentName) else replace(rootId, fragment, fragment.fragmentName)
+            = if (addToBackStack) addToBackStack(fragment.fragmentName) else this
 }

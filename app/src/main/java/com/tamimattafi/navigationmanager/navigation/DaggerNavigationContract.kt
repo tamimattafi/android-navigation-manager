@@ -8,10 +8,10 @@ interface DaggerNavigationContract {
 
     interface NavigationManager {
         fun requestAttachBaseScreen(fragment: DaggerNavigationFragment)
-        fun requestSlideLeftScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true)
-        fun requestSlideRightScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true)
-        fun requestFadeInScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true)
-        fun requestAttachScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true)
+        fun requestSlideLeftScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true, replace: Boolean = true)
+        fun requestSlideRightScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true, replace: Boolean = true)
+        fun requestFadeInScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true, replace: Boolean = true)
+        fun requestAttachScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true, replace: Boolean = true)
         fun restartCurrentScreen()
         fun removeScreen(fragment: DaggerNavigationFragment)
         fun requestBackPress()
