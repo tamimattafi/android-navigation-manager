@@ -122,8 +122,6 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
     override fun finishScreen(fragment: DaggerNavigationFragment) {
         if (currentFragment == fragment) requestBackPress()
         else supportFragmentManager.inTransaction { remove(fragment) }
-            .popBackStack()
-
     }
 
     override fun requestRestart() {
