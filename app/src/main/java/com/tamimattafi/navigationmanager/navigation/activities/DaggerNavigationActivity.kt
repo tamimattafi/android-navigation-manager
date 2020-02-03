@@ -130,5 +130,5 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
     }
 
     private fun FragmentTransaction.handleBackStack(fragment: DaggerNavigationFragment, addToBackStack: Boolean): FragmentTransaction
-            = if (addToBackStack) add(rootId, fragment).addToBackStack(fragment.fragmentName) else add(rootId, fragment)
+            = if (addToBackStack) replace(rootId, fragment, fragment.fragmentName).addToBackStack(fragment.fragmentName) else replace(rootId, fragment, fragment.fragmentName)
 }

@@ -13,8 +13,7 @@ abstract class DaggerNavigationFragment : DaggerBaseFragment(),
 
     @Inject
     lateinit var navigator: DaggerNavigationContract.NavigationManager
-
-    open var fragmentName: String = this.javaClass.simpleName
+    abstract var fragmentName: String
 
     open var handleViewOrientation: Boolean = false
 
