@@ -19,10 +19,10 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
 
     abstract fun onViewCreated(savedInstanceState: Bundle?)
 
-    protected val currentFragment: DaggerNavigationFragment?
+    final override val currentFragment: DaggerNavigationFragment?
         get() = (supportFragmentManager.findFragmentById(rootId) as? DaggerNavigationFragment)
 
-    protected var baseFragment: DaggerNavigationFragment? = null
+    final override var baseFragment: DaggerNavigationFragment? = null
 
     private var currentResultReceiver: ActivityResultReceiver? = null
 

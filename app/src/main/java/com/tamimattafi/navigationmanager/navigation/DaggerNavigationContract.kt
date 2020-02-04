@@ -7,6 +7,8 @@ import com.tamimattafi.navigationmanager.navigation.fragments.DaggerNavigationFr
 interface DaggerNavigationContract {
 
     interface NavigationManager {
+        val currentFragment: DaggerNavigationFragment?
+        var baseFragment: DaggerNavigationFragment?
         fun requestAttachBaseScreen(fragment: DaggerNavigationFragment)
         fun requestSlideLeftScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true, replace: Boolean = true)
         fun requestSlideRightScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean = true, replace: Boolean = true)
