@@ -19,10 +19,10 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
 
     abstract fun onViewCreated(savedInstanceState: Bundle?)
 
-    private val currentFragment: Fragment?
-        get() = supportFragmentManager.findFragmentById(rootId)
+    protected val currentFragment: DaggerNavigationFragment?
+        get() = (supportFragmentManager.findFragmentById(rootId) as? DaggerNavigationFragment)
 
-    private var baseFragment: Fragment? = null
+    protected var baseFragment: DaggerNavigationFragment? = null
 
     private var currentResultReceiver: ActivityResultReceiver? = null
 
@@ -103,8 +103,7 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         onBackPressed()
     }
 
-    private inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction): FragmentManager
-        = this.also { beginTransaction().func().commit() }
+
 
     override fun setActivityReceiver(resultReceiver: ActivityResultReceiver) {
         this.currentResultReceiver = resultReceiver
@@ -128,6 +127,10 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         finish()
         startActivity(intent)
     }
+
+
+    protected fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction): FragmentManager
+            = this.also { beginTransaction().func().commit() }
 
     private fun FragmentTransaction.handleReplace(fragment: DaggerNavigationFragment, replace: Boolean): FragmentTransaction
             = if (replace) replace(rootId, fragment, fragment.fragmentName) else add(rootId, fragment, fragment.fragmentName)
