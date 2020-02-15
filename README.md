@@ -62,6 +62,10 @@ class AddRoutineFragment : DaggerNavigationFragment(), View {
 	
 	//This is fragment layout id that will be used in onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?)
 	override val layoutId: Int = R.layout.fragment_add_routine
+	
+	//This is the animation that will be used in every transaction. If this is set to null, no animation will be played
+	open var animationSet: AnimationSet? = AnimationSet.DEFAULT
+
         
         ...
 }
