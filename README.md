@@ -90,7 +90,7 @@ abstract class ActivityModule {
      
 **You can now start navigating!**
 
-- **Available NavigationManager methods:**:
+- **Available Navigator methods:**:
 
 ```kotlin
 interface NavigationContract {
