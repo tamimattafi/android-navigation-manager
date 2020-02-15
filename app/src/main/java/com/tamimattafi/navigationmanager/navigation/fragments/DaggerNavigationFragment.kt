@@ -1,49 +1,36 @@
 package com.tamimattafi.navigationmanager.navigation.fragments
 
-import android.content.res.Configuration
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import com.tamimattafi.mvputils.KeyboardUtils.hideKeyboardImplicit
-import com.tamimattafi.navigationmanager.navigation.DaggerNavigationContract
+import com.tamimattafi.navigationmanager.navigation.DaggerNavigationContract.*
+import com.tamimattafi.navigationmanager.navigation.animation.AnimationSet
 import javax.inject.Inject
 
-abstract class DaggerNavigationFragment : DaggerBaseFragment(),
-    DaggerNavigationContract.SelectionListener {
+abstract class DaggerNavigationFragment : BaseFragment(), SelectionListener {
 
     @Inject
-    lateinit var navigator: DaggerNavigationContract.NavigationManager
+    lateinit var navigator: Navigator
+
     abstract var fragmentName: String
-
-    open var handleViewOrientation: Boolean = false
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        navigationActivity.hideKeyboardImplicit()
-    }
+    open var animationSet: AnimationSet? = AnimationSet.DEFAULT
 
     override fun onSelected() {
         Log.i(fragmentName, "Selected")
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if (handleViewOrientation) populateViewForOrientation()
+    protected fun DaggerNavigationFragment.navigate(attachToBackStack: Boolean = false) {
+        navigator.navigateTo(this, attachToBackStack)
     }
 
-    private fun populateViewForOrientation() {
-        (fragmentView as ViewGroup).apply {
-            removeAllViewsInLayout()
-            LayoutInflater.from(navigationActivity)
-                .inflate(layoutId, this)
-        }
+    protected fun DaggerNavigationFragment.switch(attachToBackStack: Boolean = false) {
+        navigator.switchTo(this, attachToBackStack)
+    }
+
+    protected fun DaggerNavigationFragment.restartNavigation() {
+        navigator.restartNavigationFrom(this)
     }
 
     fun restart() {
-        navigator.restartCurrentScreen()
+        navigator.restartCurrentFragment()
     }
 
-    fun finish() {
-        navigator.removeScreen(this)
-    }
 }

@@ -2,20 +2,20 @@ package com.tamimattafi.navigationmanager.navigation.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.tamimattafi.navigationmanager.R
 import com.tamimattafi.navigationmanager.navigation.DaggerNavigationContract.*
+import com.tamimattafi.navigationmanager.navigation.animation.AnimationSet
 import com.tamimattafi.navigationmanager.navigation.fragments.DaggerNavigationFragment
+import com.tamimattafi.navigationmanager.navigation.values.Deprecation
 import dagger.android.support.DaggerAppCompatActivity
 
 
-abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationManager {
+abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), Navigator {
 
     abstract val layoutId: Int
     abstract var rootId: Int
-
 
     abstract fun onViewCreated(savedInstanceState: Bundle?)
 
@@ -38,6 +38,8 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
 
     open fun onActivityCreated() {}
 
+
+    @Deprecated(Deprecation.NAVIGATE_TO_REPLACEMENT, level = DeprecationLevel.WARNING)
     override fun requestAttachBaseScreen(fragment: DaggerNavigationFragment) {
         supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         supportFragmentManager.inTransaction {
@@ -46,6 +48,7 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         baseFragment = fragment
     }
 
+    @Deprecated(Deprecation.NAVIGATE_TO_REPLACEMENT, level = DeprecationLevel.WARNING)
     override fun requestSlideLeftScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean, replace: Boolean) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
@@ -53,10 +56,12 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
                 R.anim.exit,
                 R.anim.pop_enter,
                 R.anim.pop_exit
-            ).handleReplace(fragment, replace).handleBackStack(fragment, addToBackStack)
+            ).handleTransitionType(fragment, replace).handleBackStack(addToBackStack)
         }
     }
 
+
+    @Deprecated(Deprecation.NAVIGATE_TO_REPLACEMENT, level = DeprecationLevel.WARNING)
     override fun requestSlideRightScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean, replace: Boolean) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
@@ -64,10 +69,11 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
                 R.anim.pop_exit,
                 R.anim.enter,
                 R.anim.exit
-            ).handleReplace(fragment, replace).handleBackStack(fragment, addToBackStack)
+            ).handleTransitionType(fragment, replace).handleBackStack(addToBackStack)
         }
     }
 
+    @Deprecated(Deprecation.NAVIGATE_TO_REPLACEMENT, level = DeprecationLevel.WARNING)
     override fun requestFadeInScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean, replace: Boolean) {
         supportFragmentManager.inTransaction {
             setCustomAnimations(
@@ -75,18 +81,19 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
                 android.R.anim.fade_out,
                 android.R.anim.fade_in,
                 android.R.anim.fade_out
-            ).handleReplace(fragment, replace).handleBackStack(fragment, addToBackStack)
+            ).handleTransitionType(fragment, replace).handleBackStack(addToBackStack)
         }
     }
 
+    @Deprecated(Deprecation.NAVIGATE_TO_REPLACEMENT, level = DeprecationLevel.WARNING)
     override fun requestAttachScreen(fragment: DaggerNavigationFragment, addToBackStack: Boolean, replace: Boolean) {
         supportFragmentManager.inTransaction {
-            handleReplace(fragment, replace).handleBackStack(fragment, addToBackStack)
+            handleTransitionType(fragment, replace).handleBackStack(addToBackStack)
         }
     }
 
-    override fun restartCurrentScreen() {
-        (currentFragment as? DaggerNavigationFragment)?.let {
+    override fun restartCurrentFragment() {
+        currentFragment?.let {
             supportFragmentManager.inTransaction { remove(it) }
                 .apply { popBackStack() }
                 .inTransaction { add(rootId, it.javaClass.newInstance()).addToBackStack(it.fragmentName) }
@@ -99,11 +106,9 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         } ?: super.onBackPressed()
     }
 
-    override fun requestBackPress() {
+    override fun performBackPress() {
         onBackPressed()
     }
-
-
 
     override fun setActivityReceiver(resultReceiver: ActivityResultReceiver) {
         this.currentResultReceiver = resultReceiver
@@ -118,23 +123,39 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), NavigationM
         currentResultReceiver?.onReceiveActivityResult(requestCode, resultCode, data)
     }
 
-    override fun removeScreen(fragment: DaggerNavigationFragment) {
-        if (currentFragment == fragment) requestBackPress()
-        else supportFragmentManager.inTransaction { remove(fragment) }
+    override fun switchTo(fragment: DaggerNavigationFragment, addCurrentToBackStack: Boolean) {
+        supportFragmentManager.inTransaction {
+            handleAnimationSet(fragment.animationSet).handleTransitionType(fragment, true).handleBackStack(addCurrentToBackStack)
+        }
     }
 
-    override fun requestRestart() {
+    override fun navigateTo(fragment: DaggerNavigationFragment, addCurrentToBackStack: Boolean) {
+        supportFragmentManager.inTransaction {
+            handleAnimationSet(fragment.animationSet).handleTransitionType(fragment, false).handleBackStack(addCurrentToBackStack)
+        }
+    }
+
+    override fun restartActivity() {
         finish()
         startActivity(intent)
     }
 
-
     protected fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction): FragmentManager
             = this.also { beginTransaction().func().commit() }
 
-    private fun FragmentTransaction.handleReplace(fragment: DaggerNavigationFragment, replace: Boolean): FragmentTransaction
+    private fun FragmentTransaction.handleTransitionType(fragment: DaggerNavigationFragment, replace: Boolean): FragmentTransaction
             = if (replace) replace(rootId, fragment, fragment.fragmentName) else add(rootId, fragment, fragment.fragmentName)
 
-    private fun FragmentTransaction.handleBackStack(fragment: DaggerNavigationFragment, addToBackStack: Boolean): FragmentTransaction
-            = if (addToBackStack) addToBackStack(fragment.fragmentName) else this
+    private fun FragmentTransaction.handleBackStack(addCurrentToBackStack: Boolean): FragmentTransaction
+            = if (addCurrentToBackStack) addToBackStack(currentFragment?.fragmentName) else this
+
+    private fun FragmentTransaction.handleAnimationSet(animationSet: AnimationSet?): FragmentTransaction
+            = animationSet?.let { set ->
+                setCustomAnimations(
+                    set.enterAnimation,
+                    set.exitAnimation,
+                    set.popEnterAnimation,
+                    set.popExitAnimation
+                )
+            } ?: this
 }
