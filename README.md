@@ -3,9 +3,9 @@ A Dagger2 Based library for easy navigation between fragments.
 
 # Usage:
 
-**1 - Installation**:
+**1. Installation**:
 
-1- Add this to your Project level build.gradle file:
+1.1. Add this to your Project level build.gradle file:
 
 ```gradle
 allprojects {
@@ -14,7 +14,7 @@ allprojects {
     }
 }
 ```
-  2- Add this to your dependencies in your App level build.gradle file:
+1.2. Add this to your dependencies in your App level build.gradle file:
 
 ```gradle
 dependencies {
@@ -22,9 +22,9 @@ dependencies {
 }
 ```
 
-**2- Implementation**:
+**2. Implementation**:
 
-1- Make your host activity extend **NavigationActivity**: 
+2.1. Make your host activity extend **NavigationActivity**: 
 
 ```kotlin
 class AppActivity : DaggerNavigationActivity() {
@@ -48,7 +48,7 @@ class AppActivity : DaggerNavigationActivity() {
 }
 ```
 
-2- Make your fragments extend **DaggerNavigationFragment()**:
+2.2. Make your fragments extend **DaggerNavigationFragment()**:
 
 
 
@@ -71,7 +71,7 @@ class AddRoutineFragment : DaggerNavigationFragment(), View {
 }
 ```    
 
-3- Provide NavigationManager, Activity and Context to your fragments using Dagger2:
+2.3. Provide NavigationManager, Activity and Context to your fragments using Dagger2:
 
 ```kotlin
 @Module
