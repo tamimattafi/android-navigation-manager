@@ -82,6 +82,22 @@ interface DaggerNavigationContract {
             addCurrentToBackStack: Boolean = true
         )
 
+        /*
+        * #DESCRIPTION
+        *
+        * This method will remove this fragment and popup back-stack,
+        * Which means that if the user is viewing an other fragment and wants to navigate back, this fragment will be skipped.
+        * This behaviour is not guarenteed if this fragment is on top of the back-stack.
+        *
+        *
+        * #PARAMETERS
+        *
+        * - fragment (required): the desired fragment to be switched to (required)
+        *
+        * */
+        fun remove(fragment: DaggerNavigationFragment)
+
+
 
         /*
         * #DESCRIPTION
@@ -105,8 +121,10 @@ interface DaggerNavigationContract {
         * #DESCRIPTION
         *
         * This method will restart the current child fragment, if no child fragment is attached, it will restart
-        * the base fragment
-        * This method is used when you want a fresh instance of the current fragment with fresh dependencies
+        * the base fragment.
+        * This method is used when you want a fresh instance of the current fragment with fresh dependencies.
+        * All arguments passed to this fragment will be saved
+        *
         *
         * */
         fun restartCurrentFragment()
@@ -187,15 +205,42 @@ interface DaggerNavigationContract {
     }
 
 
-
+    /*
+	* #DESCRIPTION
+	*
+	* If this interface is implemented by the current visible fragment, any back press will call its onBackPressed() instead of activity's one.
+	* Returning true will trigger activity's on onBackPressed(), which means the navigator will navigate back, returning false will not.
+	*
+	* */
     interface BackPressController {
         fun onBackPressed(): Boolean
     }
 
+
+    /*
+    * #DESCRIPTION
+    *
+    * If this interface is implemented by a fragment, onSelected() will be called when a navigation to that fragment happens.
+    * be careful from using any view components because they might still be null when this method is called
+    *
+    * */
     interface SelectionListener {
         fun onSelected()
     }
 
+
+    /*
+    * #DESCRIPTION
+    *
+    * If the fragment is the current ActivityResultReceiver of the navigator, each time a call back returns from
+    * startActivityForResult, this fragment's fun onReceiveActivityResult(requestCode, resultCode, data) will be triggered
+    *
+    * #PARAMETERS
+    * requestCode: the code sent with the request
+    * resultCode: the code determining whether the call back is successful or not
+    * data: the returned data from the call back
+    *
+    */
     interface ActivityResultReceiver {
         fun onReceiveActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     }

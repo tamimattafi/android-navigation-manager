@@ -12,6 +12,12 @@ import javax.inject.Inject
 
 abstract class BaseFragment : DaggerFragment() {
 
+    /*
+    * #DESCRIPTION
+    *
+    * This is the layoutId of the desired view that will be inflated in onCreateView(...)
+    *
+    * */
     protected abstract val layoutId: Int
 
     @Deprecated(PROPERTY_REMOVAL, level = DeprecationLevel.WARNING, replaceWith = ReplaceWith("view!!"))

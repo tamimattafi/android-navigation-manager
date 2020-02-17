@@ -14,30 +14,93 @@ import dagger.android.support.DaggerAppCompatActivity
 
 abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), Navigator {
 
+    /*
+    * #DESCRIPTION
+    *
+    * This is the layoutId of the desired view that will be passed to setContentView(...)
+    *
+    * */
     abstract val layoutId: Int
+
+
+
+    /*
+    * #DESCRIPTION
+    *
+    * This is the rootId of the desired view that will be replaced by fragments during navigation
+    *
+    * */
     abstract var rootId: Int
 
+
+    /*
+    * #DESCRIPTION
+    *
+    * This method will be called after the view is visible to the user
+    * This is a suitable place to start your logic processing and navigation
+    *
+    * */
     abstract fun onViewCreated(savedInstanceState: Bundle?)
 
+    /*
+    * #DESCRIPTION
+    *
+    * This method will be called right after super.onCreate(...) and before the view is visible to the user
+    * This is a suitable place to change themes and apply new styles
+    *
+    * */
+    open fun onActivityCreated() {}
+
+
+
+    /*
+    * #DESCRIPTION
+    *
+    * This is the current visible child fragment
+    * If the current visible fragment is the base fragment or no fragment at all, a null is returned instead
+    *
+    * */
     final override val currentFragment: DaggerNavigationFragment?
         get() = (supportFragmentManager.findFragmentById(rootId) as? DaggerNavigationFragment)
 
+
+    /*
+    * #DESCRIPTION
+    *
+    * This is the current base fragment
+    * If no base fragment was attached, a null is returned instead
+    *
+    * */
     final override var baseFragment: DaggerNavigationFragment? = null
 
+
+    /*
+    * #DESCRIPTION
+    *
+    * This is the current ActivityResultReceiver, if a call back is returned from startActivityForResult
+    * fragment's fun onReceiveActivityResult(requestCode, resultCode, data) will be triggered
+    *
+    * */
     private var currentResultReceiver: ActivityResultReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onActivityCreated()
         setContentView(layoutId)
+        setUpBackStackListener()
         onViewCreated(savedInstanceState)
+
+    }
+
+    private fun setUpBackStackListener() {
         supportFragmentManager.addOnBackStackChangedListener {
-            (currentFragment as? SelectionListener)?.onSelected()
+            notifyCurrentFragmentSelection()
         }
     }
 
-    open fun onActivityCreated() {}
-
+    private fun notifyCurrentFragmentSelection() {
+        (currentFragment as? SelectionListener)?.onSelected()
+    }
 
     @Deprecated(Deprecation.NAVIGATE_TO_REPLACEMENT, level = DeprecationLevel.WARNING)
     override fun requestAttachBaseScreen(fragment: DaggerNavigationFragment) {
@@ -93,10 +156,19 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), Navigator {
     }
 
     override fun restartCurrentFragment() {
-        currentFragment?.let {
-            supportFragmentManager.inTransaction { remove(it) }
-                .apply { popBackStack() }
-                .inTransaction { add(rootId, it.javaClass.newInstance()).addToBackStack(it.fragmentName) }
+        (currentFragment ?: baseFragment)?.let { fragment ->
+            remove(fragment)
+            reAttach(fragment)
+        }
+    }
+
+    private fun popBackStack() {
+        supportFragmentManager.popBackStack()
+    }
+
+    private fun reAttach(fragment: DaggerNavigationFragment) {
+        supportFragmentManager.inTransaction {
+            replace(rootId, fragment.javaClass.newInstance().also { it.arguments = fragment.arguments }, fragment.fragmentName)
         }
     }
 
@@ -125,14 +197,19 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), Navigator {
 
     override fun switchTo(fragment: DaggerNavigationFragment, addCurrentToBackStack: Boolean) {
         supportFragmentManager.inTransaction {
-            handleAnimationSet(fragment.animationSet).handleTransitionType(fragment, true).handleBackStack(addCurrentToBackStack)
+            handleAnimationSet(fragment.animationSet).replace(rootId, fragment, fragment.fragmentName).handleBackStack(addCurrentToBackStack)
         }
     }
 
     override fun navigateTo(fragment: DaggerNavigationFragment, addCurrentToBackStack: Boolean) {
         supportFragmentManager.inTransaction {
-            handleAnimationSet(fragment.animationSet).handleTransitionType(fragment, false).handleBackStack(addCurrentToBackStack)
+            handleAnimationSet(fragment.animationSet).add(rootId, fragment, fragment.fragmentName).handleBackStack(addCurrentToBackStack)
         }
+    }
+
+    override fun remove(fragment: DaggerNavigationFragment) {
+        supportFragmentManager.inTransaction { remove(fragment) }
+        popBackStack()
     }
 
     override fun restartActivity() {
@@ -140,9 +217,11 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), Navigator {
         startActivity(intent)
     }
 
+
     protected fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction): FragmentManager
             = this.also { beginTransaction().func().commit() }
 
+    @Deprecated(Deprecation.NAVIGATE_TO_REPLACEMENT, level = DeprecationLevel.WARNING)
     private fun FragmentTransaction.handleTransitionType(fragment: DaggerNavigationFragment, replace: Boolean): FragmentTransaction
             = if (replace) replace(rootId, fragment, fragment.fragmentName) else add(rootId, fragment, fragment.fragmentName)
 
@@ -151,11 +230,11 @@ abstract class DaggerNavigationActivity : DaggerAppCompatActivity(), Navigator {
 
     private fun FragmentTransaction.handleAnimationSet(animationSet: AnimationSet?): FragmentTransaction
             = animationSet?.let { set ->
-                setCustomAnimations(
-                    set.enterAnimation,
-                    set.exitAnimation,
-                    set.popEnterAnimation,
-                    set.popExitAnimation
-                )
-            } ?: this
+                    setCustomAnimations(
+                        set.enterAnimation,
+                        set.exitAnimation,
+                        set.popEnterAnimation,
+                        set.popExitAnimation
+                    )
+                } ?: this
 }
