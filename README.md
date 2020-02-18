@@ -1,4 +1,4 @@
-# NavigationManager for Android
+# Navigation Manager for Android
 A Helper library for easy navigation between fragments.
 
 # Installation:
@@ -7,9 +7,13 @@ A Helper library for easy navigation between fragments.
 
 ```gradle
 allprojects {
+
     repositories {
-	maven { url 'https://jitpack.io' }
+	
+        maven { url 'https://jitpack.io' }
+	
     }
+    
 }
 ```
 2. Add this to your dependencies in your App level build.gradle file:
@@ -18,11 +22,13 @@ allprojects {
 ```gradle
 dependencies {
 
-    //Basic implementation
     implementation "com.github.tamimattafi.android-navigation-manager:basic:$latest_version"
     
+}
+```
 
-    //OPTIONAL IMPLEMENTATIONS
+```
+dependencies {
 
     /*
     * # CORE
@@ -38,13 +44,18 @@ dependencies {
     * This module has support for dagger support injectors
     * It has the same functionality as the basic module so choosing one of them depends on your project requirements
     * Why not both? It is possible to use both modules alongside each other!
+    *
+    * #NOTE
+    * Using navigation provided by this module requires you to provide an instance of DaggerNavigator
+    * In your ActivityModule, you must implement a binder/provider for this type.
     */
     implementation "com.github.tamimattafi.android-navigation-manager:dagger:$latest_version"
-   
-
-   
+    
+    
 }
 ```
+
+
 # Docs
 The code is well documented. A quick reading [here](https://github.com/tamimattafi/android-navigation-manager/blob/master/core/src/main/java/com/tamimattafi/navigation/core/NavigationContract.kt) would make everything clear to you!
 
