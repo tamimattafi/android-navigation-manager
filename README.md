@@ -31,8 +31,8 @@ dependencies {
 
 3.1. Implementing the core module
    
-> This should only be included if you want to extend the core functionality in a different direction
-> This must be included if you want to override transaction animations
+> This should only be included if you want to extend the core functionality in a different direction.
+> This must be included if you want to override transaction animations.
    
 ```gradle
 dependencies {
@@ -43,12 +43,12 @@ dependencies {
 ```
 
 3.2. **Dagger Support**
-> This module has support for dagger support injectors
-> It has the same functionality as the basic module so choosing one of them depends on your project requirements
+> This module has support for dagger support injectors.
+> It has the same functionality as the basic module so choosing one of them depends on your project requirements.
 > Why not both? It is possible to use both modules alongside each other!
 >
 > **NOTE**
-> Using navigation provided by this module requires you to provide an instance of DaggerNavigator
+> Using navigation provided by this module requires you to provide an instance of DaggerNavigator.
 > In your ActivityModule, you must implement a binder/provider for this type.
 
 
