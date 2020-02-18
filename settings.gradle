@@ -1,2 +1,0 @@
-include ':dagger', ':basic', ':core'
-rootProject.name='NavigationManager'
