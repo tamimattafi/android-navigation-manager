@@ -7,19 +7,19 @@ import com.tamimattafi.navigation.core.R.anim.*
 class AnimationSet() {
 
     @AnimatorRes @AnimRes
-    var enterAnimation: Int = DEFAULT.enterAnimation
+    var enterAnimation: Int = enter
     private set
 
     @AnimatorRes @AnimRes
-    var exitAnimation: Int = DEFAULT.exitAnimation
+    var exitAnimation: Int = exit
     private set
 
     @AnimatorRes @AnimRes
-    var popEnterAnimation: Int = DEFAULT.popEnterAnimation
+    var popEnterAnimation: Int = pop_enter
     private set
 
     @AnimatorRes @AnimRes
-    var popExitAnimation: Int = DEFAULT.popExitAnimation
+    var popExitAnimation: Int = pop_exit
     private set
 
     constructor(enterAnimation: Int, exitAnimation: Int, popEnterAnimation: Int, popExitAnimation: Int): this() {
@@ -70,7 +70,7 @@ class AnimationSet() {
 
         }
 
-        var DEFAULT: AnimationSet = SLIDE_LEFT
+        var DEFAULT: AnimationSet = AnimationSet()
 
         val SLIDE_LEFT: AnimationSet
         get() = AnimationSet(
