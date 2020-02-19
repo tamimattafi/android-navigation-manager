@@ -47,9 +47,17 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     private var currentResultReceiver: ActivityResultReceiver? = null
 
     /**
-     * Method will be called right after super.onCreate(...) and before the view is visible to the user
-     * This is a suitable place to change themes and apply new styles
-     */
+    * Method will be called right before super.onCreate(...)
+    * This is a suitable place to inject dependencies
+    */
+    open fun onActivityLaunched() {
+        Log.d(TAG, ACTIVITY_LAUNCHED_MESSAGE)
+    }
+
+    /**
+    * Method will be called right after super.onCreate(...) and before the view is visible to the user
+    * This is a suitable place to change themes and apply new styles
+    */
     open fun onActivityCreated() {
         Log.d(TAG, ACTIVITY_CREATED_MESSAGE)
     }
@@ -63,6 +71,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     }
 
     final override fun onCreate(savedInstanceState: Bundle?) {
+        onActivityLaunched()
         super.onCreate(savedInstanceState)
         onActivityCreated()
         setContentView(layoutId)
@@ -166,6 +175,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         private const val TAG = "NavigationActivity"
         private const val VIEW_CREATED_MESSAGE = "View Created"
         private const val ACTIVITY_CREATED_MESSAGE = "Activity Created"
+        private const val ACTIVITY_LAUNCHED_MESSAGE = "Activity Launched"
         private const val FRAGMENT_ATTACHED_MESSAGE = "Navigation Fragment Attached"
     }
 

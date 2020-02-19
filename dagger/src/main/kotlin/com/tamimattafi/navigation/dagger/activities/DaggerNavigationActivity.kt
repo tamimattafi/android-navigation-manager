@@ -1,5 +1,6 @@
 package com.tamimattafi.navigation.dagger.activities
 
+import androidx.annotation.CallSuper
 import com.tamimattafi.navigation.core.activities.BaseNavigationActivity
 import com.tamimattafi.navigation.dagger.DaggerNavigator
 import com.tamimattafi.navigation.dagger.fragments.DaggerNavigationFragment
@@ -13,14 +14,15 @@ import javax.inject.Inject
 abstract class DaggerNavigationActivity : BaseNavigationActivity<DaggerNavigationFragment>(), HasAndroidInjector, DaggerNavigator {
 
     @Inject
-    lateinit var androidInjector: DispatchingAndroidInjector<Any?>
+    protected lateinit var androidInjector: DispatchingAndroidInjector<Any?>
 
+    @CallSuper
     override fun onActivityCreated() {
         super.onActivityCreated()
         AndroidInjection.inject(this)
     }
 
-    override fun androidInjector(): AndroidInjector<Any?> {
+    final override fun androidInjector(): AndroidInjector<Any?> {
         return androidInjector
     }
 
