@@ -11,13 +11,13 @@ group = "com.github.tamimattafi"
 
 
 android {
-    compileSdkVersion(AndroidConfig.COMPILE_SDK_VERSION)
+    compileSdkVersion(AndroidConfiguration.COMPILE_SDK_VERSION)
 
     defaultConfig {
-        versionCode = 1
-        versionName = "1.0"
-        minSdkVersion(AndroidConfig.MIN_SDK_VERSION)
-        targetSdkVersion(AndroidConfig.TARGET_SDK_VERSION)
+        versionCode = AndroidConfiguration.VERSION_CODE
+        versionName = AndroidConfiguration.VERSION_NAME
+        minSdkVersion(AndroidConfiguration.MIN_SDK_VERSION)
+        targetSdkVersion(AndroidConfiguration.TARGET_SDK_VERSION)
     }
 
     sourceSets {
