@@ -4,14 +4,20 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("kotlin-android-extensions")
+    id("com.github.dcendents.android-maven")
 }
 
+group = "com.github.tamimattafi"
+
+
 android {
-    compileSdkVersion(AndroidConfiguration.COMPILE_SDK_VERSION)
+    compileSdkVersion(AndroidConfig.COMPILE_SDK_VERSION)
 
     defaultConfig {
-        minSdkVersion(AndroidConfiguration.MIN_SDK_VERSION)
-        targetSdkVersion(AndroidConfiguration.TARGET_SDK_VERSION)
+        versionCode = 1
+        versionName = "1.0"
+        minSdkVersion(AndroidConfig.MIN_SDK_VERSION)
+        targetSdkVersion(AndroidConfig.TARGET_SDK_VERSION)
     }
 
     sourceSets {
