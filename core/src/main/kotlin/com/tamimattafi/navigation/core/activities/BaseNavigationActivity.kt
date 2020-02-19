@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.tamimattafi.navigation.core.activities
 
 import android.content.Intent
@@ -5,11 +7,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.tamimattafi.navigation.core.NavigationContract.*
-import com.tamimattafi.navigation.core.animation.AnimationSet
 import com.tamimattafi.navigation.core.fragments.BaseNavigationFragment
+import com.tamimattafi.navigation.core.utils.NavigationUtils.handleAnimationSet
+import com.tamimattafi.navigation.core.utils.NavigationUtils.handleBackStack
+import com.tamimattafi.navigation.core.utils.NavigationUtils.inTransaction
 
 
 abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActivity(), Navigator<F> {
@@ -44,24 +47,27 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     private var currentResultReceiver: ActivityResultReceiver? = null
 
     /**
+     * Method will be called right after super.onCreate(...) and before the view is visible to the user
+     * This is a suitable place to change themes and apply new styles
+     */
+    open fun onActivityCreated() {
+        Log.d(TAG, ACTIVITY_CREATED_MESSAGE)
+    }
+
+    /**
     * Method will be called after the view is visible to the user
     * This is a suitable place to start your logic processing and navigation
     */
-    abstract fun onViewCreated(savedInstanceState: Bundle?)
+    open fun onViewCreated(savedInstanceState: Bundle?) {
+        Log.d(TAG, VIEW_CREATED_MESSAGE)
+    }
 
-    /**
-    * Method will be called right after super.onCreate(...) and before the view is visible to the user
-    * This is a suitable place to change themes and apply new styles
-    */
-    open fun onActivityCreated() {}
-
-    override fun onCreate(savedInstanceState: Bundle?) {
+    final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onActivityCreated()
         setContentView(layoutId)
         setUpBackStackListener()
         onViewCreated(savedInstanceState)
-
     }
 
     final override fun restartCurrentFragment() {
@@ -97,25 +103,29 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     }
 
     final override fun switchTo(fragment: F, addCurrentToBackStack: Boolean) {
-        supportFragmentManager.inTransaction {
-            handleAnimationSet(fragment.animationSet).replace(rootId, fragment, fragment.fragmentName).handleBackStack(addCurrentToBackStack)
+        startTransaction {
+            handleAnimationSet(fragment.animationSet)
+                .replace(rootId, fragment, fragment.fragmentName)
+                .handleBackStack(addCurrentToBackStack, currentFragment?.fragmentName)
         }
     }
 
     final override fun navigateTo(fragment: F, addCurrentToBackStack: Boolean) {
-        supportFragmentManager.inTransaction {
-            handleAnimationSet(fragment.animationSet).add(rootId, fragment, fragment.fragmentName).handleBackStack(addCurrentToBackStack)
+        startTransaction {
+            handleAnimationSet(fragment.animationSet)
+                .add(rootId, fragment, fragment.fragmentName)
+                .handleBackStack(addCurrentToBackStack, currentFragment?.fragmentName)
         }
     }
 
     final override fun restartNavigationFrom(fragment: F) {
-        supportFragmentManager.inTransaction {
+        startTransaction {
             handleAnimationSet(fragment.animationSet).replace(rootId, fragment)
         }
     }
 
     final override fun remove(fragment: F) {
-        supportFragmentManager.inTransaction { remove(fragment) }
+        startTransaction { remove(fragment) }
         popBackStack()
     }
 
@@ -125,7 +135,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     }
 
     open fun onFragmentAttached(fragment: F) {
-        Log.d(fragment.fragmentName, "Attached")
+        Log.d(fragment.fragmentName, FRAGMENT_ATTACHED_MESSAGE)
     }
 
     private fun popBackStack() {
@@ -133,7 +143,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     }
 
     private fun reAttach(fragment: F) {
-        supportFragmentManager.inTransaction {
+        startTransaction {
             replace(rootId, fragment.javaClass.newInstance().also { it.arguments = fragment.arguments }, fragment.fragmentName)
         }
     }
@@ -148,24 +158,15 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         (currentFragment as? SelectionListener)?.onSelected()
     }
 
-    protected fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction): FragmentManager
-            = this.also {
-                beginTransaction().func().commit()
-                onFragmentAttached(currentFragment!!)
-            }
+    private fun startTransaction(transaction: FragmentTransaction.() -> FragmentTransaction) {
+        supportFragmentManager.inTransaction(transaction)
+    }
 
+    companion object {
+        private const val TAG = "NavigationActivity"
+        private const val VIEW_CREATED_MESSAGE = "View Created"
+        private const val ACTIVITY_CREATED_MESSAGE = "Activity Created"
+        private const val FRAGMENT_ATTACHED_MESSAGE = "Navigation Fragment Attached"
+    }
 
-
-    private fun FragmentTransaction.handleBackStack(addCurrentToBackStack: Boolean): FragmentTransaction
-            = if (addCurrentToBackStack) addToBackStack(currentFragment?.fragmentName) else this
-
-    private fun FragmentTransaction.handleAnimationSet(animationSet: AnimationSet?): FragmentTransaction
-            = animationSet?.let { set ->
-                    setCustomAnimations(
-                        set.enterAnimation,
-                        set.exitAnimation,
-                        set.popEnterAnimation,
-                        set.popExitAnimation
-                    )
-                } ?: this
 }

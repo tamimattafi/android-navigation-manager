@@ -22,7 +22,12 @@ abstract class BaseNavigationFragment : BaseFragment(), SelectionListener {
     * be careful from using any view components because they might still be null when this method is called
     */
     override fun onSelected() {
-        Log.d(fragmentName, "Selected")
+        Log.d(fragmentName, SELECTED_MESSAGE)
+    }
+
+
+    companion object {
+        const val SELECTED_MESSAGE = "Navigation Fragment Selected"
     }
 
 }
