@@ -10,12 +10,12 @@ abstract class BaseNavigationFragment : BaseFragment(), SelectionListener {
     * Fragment name that will be saved in back-stack and used for logging, make sure to have a unique name for each fragment type
     * Calling this.javaClass.name is a good idea if your fragment classes have unique names
     */
-    abstract var fragmentName: String
+    abstract val fragmentName: String
 
     /**
     * Animation that will be played during each transaction.
     */
-    open var animationSet: AnimationSet? = AnimationSet.DEFAULT
+    open val animationSet: AnimationSet? = AnimationSet.DEFAULT
 
     /**
     * Will be called when a navigation to that fragment happens.

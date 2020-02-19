@@ -3,6 +3,7 @@ package com.tamimattafi.navigation.core.activities
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -21,7 +22,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     /**
     * RootId of the desired view that will be replaced by fragments during navigation
     */
-    abstract var rootId: Int
+    abstract val rootId: Int
 
     /**
     * Current visible child fragment
@@ -63,57 +64,68 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
 
     }
 
-    override fun restartCurrentFragment() {
+    final override fun restartCurrentFragment() {
         (currentFragment ?: baseFragment)?.let { fragment ->
             remove(fragment)
             reAttach(fragment)
         }
     }
 
-
+    @CallSuper
     override fun onBackPressed() {
         (currentFragment as? BackPressController)?.let {
             if (it.onBackPressed()) super.onBackPressed()
         } ?: super.onBackPressed()
     }
 
-    override fun performBackPress() {
+    final override fun performBackPress() {
         onBackPressed()
     }
 
-    override fun setActivityReceiver(resultReceiver: ActivityResultReceiver) {
+    final override fun setActivityReceiver(resultReceiver: ActivityResultReceiver) {
         this.currentResultReceiver = resultReceiver
     }
 
-    override fun requestActivityForResult(intent: Intent, requestCode: Int) {
+    final override fun requestActivityForResult(intent: Intent, requestCode: Int) {
         startActivityForResult(intent, requestCode)
     }
 
+    @CallSuper
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         currentResultReceiver?.onReceiveActivityResult(requestCode, resultCode, data)
     }
 
-    override fun switchTo(fragment: F, addCurrentToBackStack: Boolean) {
+    final override fun switchTo(fragment: F, addCurrentToBackStack: Boolean) {
         supportFragmentManager.inTransaction {
             handleAnimationSet(fragment.animationSet).replace(rootId, fragment, fragment.fragmentName).handleBackStack(addCurrentToBackStack)
         }
     }
 
-    override fun navigateTo(fragment: F, addCurrentToBackStack: Boolean) {
+    final override fun navigateTo(fragment: F, addCurrentToBackStack: Boolean) {
         supportFragmentManager.inTransaction {
             handleAnimationSet(fragment.animationSet).add(rootId, fragment, fragment.fragmentName).handleBackStack(addCurrentToBackStack)
         }
     }
 
-    override fun remove(fragment: F) {
+    final override fun restartNavigationFrom(fragment: F) {
+        supportFragmentManager.inTransaction {
+            handleAnimationSet(fragment.animationSet).replace(rootId, fragment)
+        }
+    }
+
+    final override fun remove(fragment: F) {
         supportFragmentManager.inTransaction { remove(fragment) }
         popBackStack()
     }
 
-    override fun restartActivity() {
+    final override fun restartActivity() {
         finish()
         startActivity(intent)
+    }
+
+    open fun onFragmentAttached(fragment: F) {
+        Log.d(fragment.fragmentName, "Attached")
     }
 
     private fun popBackStack() {
@@ -142,9 +154,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
                 onFragmentAttached(currentFragment!!)
             }
 
-    open fun onFragmentAttached(fragment: F) {
-        Log.d(fragment.fragmentName, "Attached")
-    }
+
 
     private fun FragmentTransaction.handleBackStack(addCurrentToBackStack: Boolean): FragmentTransaction
             = if (addCurrentToBackStack) addToBackStack(currentFragment?.fragmentName) else this
