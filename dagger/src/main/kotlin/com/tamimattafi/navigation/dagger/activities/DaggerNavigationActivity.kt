@@ -17,8 +17,8 @@ abstract class DaggerNavigationActivity : BaseNavigationActivity<DaggerNavigatio
     protected lateinit var androidInjector: DispatchingAndroidInjector<Any?>
 
     @CallSuper
-    override fun onActivityCreated() {
-        super.onActivityCreated()
+    override fun onActivityLaunched() {
+        super.onActivityLaunched()
         AndroidInjection.inject(this)
     }
 
