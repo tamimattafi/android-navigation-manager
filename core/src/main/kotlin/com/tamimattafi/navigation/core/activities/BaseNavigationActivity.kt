@@ -13,19 +13,29 @@ import com.tamimattafi.navigation.core.fragments.BaseNavigationFragment
 import com.tamimattafi.navigation.core.utils.NavigationUtils.handleAnimationSet
 import com.tamimattafi.navigation.core.utils.NavigationUtils.handleBackStack
 import com.tamimattafi.navigation.core.utils.NavigationUtils.inTransaction
+import com.tamimattafi.navigation.core.values.Values.ACTIVITY_CREATED_MESSAGE
+import com.tamimattafi.navigation.core.values.Values.ACTIVITY_LAUNCHED_MESSAGE
+import com.tamimattafi.navigation.core.values.Values.BACK_STACK_CHANGE_MESSAGE
+import com.tamimattafi.navigation.core.values.Values.BASE_FRAGMENT_CHANGE_MESSAGE
+import com.tamimattafi.navigation.core.values.Values.FRAGMENT_ATTACHED_MESSAGE
+import com.tamimattafi.navigation.core.values.Values.RESULT_RECEIVER_CHANGE_MESSAGE
+import com.tamimattafi.navigation.core.values.Values.VIEW_CREATED_MESSAGE
 
 
 abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActivity(), Navigator<F> {
 
+
     /**
     * LayoutId of the desired view that will be passed to setContentView(...)
     */
-    abstract val layoutId: Int
+    protected abstract val layoutId: Int
+
 
     /**
     * RootId of the desired view that will be replaced by fragments during navigation
     */
-    abstract val rootId: Int
+    protected abstract val rootId: Int
+
 
     /**
     * Current visible child fragment
@@ -34,17 +44,28 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     final override val currentFragment: F?
         get() = (supportFragmentManager.findFragmentById(rootId) as? F)
 
+
     /**
     * Current base fragment
     * If no base fragment was attached, a null is returned instead
     */
     final override var baseFragment: F? = null
+    set(value) {
+        field = value
+        onBaseFragmentChange(value)
+    }
+
 
     /**
     * Current ActivityResultReceiver, if a call back is returned from startActivityForResult
     * fragment's fun onReceiveActivityResult(requestCode, resultCode, data) will be triggered
     */
     private var currentResultReceiver: ActivityResultReceiver? = null
+    set(value) {
+        field = value
+        onResultReceiverChange(value)
+    }
+
 
     /**
     * Method will be called right before super.onCreate(...)
@@ -54,6 +75,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         Log.d(TAG, ACTIVITY_LAUNCHED_MESSAGE)
     }
 
+
     /**
     * Method will be called right after super.onCreate(...) and before the view is visible to the user
     * This is a suitable place to change themes and apply new styles
@@ -62,12 +84,49 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         Log.d(TAG, ACTIVITY_CREATED_MESSAGE)
     }
 
+
     /**
     * Method will be called after the view is visible to the user
     * This is a suitable place to start your logic processing and navigation
     */
     open fun onViewCreated(savedInstanceState: Bundle?) {
         Log.d(TAG, VIEW_CREATED_MESSAGE)
+    }
+
+
+    /**
+    * Method will be called if base fragment's instance was changed
+    * This is a suitable place to reset some states related to back-stack
+    */
+    open fun onBaseFragmentChange(newBaseFragment: F?) {
+        Log.d(TAG, BASE_FRAGMENT_CHANGE_MESSAGE)
+    }
+
+
+    /**
+    * Method will be called if the result receiver was change
+    * This is a suitable place to stop any result handlers in your previous receiver
+    */
+    open fun onResultReceiverChange(newResultReceiver: ActivityResultReceiver?) {
+        Log.d(TAG, RESULT_RECEIVER_CHANGE_MESSAGE)
+    }
+
+
+    /**
+    * Method will be called if the back stack was change
+    * This is a suitable place to check for currentFragment changes
+    */
+    open fun onBackStackChanged() {
+        Log.d(TAG, BACK_STACK_CHANGE_MESSAGE)
+    }
+
+
+    /**
+    * Method will be called after any navigation transaction
+    * This is a suitable place to apply some behaviours to the fragment
+    */
+    open fun onFragmentAttached(fragment: F) {
+        Log.d(fragment.fragmentName, FRAGMENT_ATTACHED_MESSAGE)
     }
 
     final override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,24 +171,20 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     }
 
     final override fun switchTo(fragment: F, addCurrentToBackStack: Boolean) {
-        startTransaction {
-            handleAnimationSet(fragment.animationSet)
-                .replace(rootId, fragment, fragment.fragmentName)
-                .handleBackStack(addCurrentToBackStack, currentFragment?.fragmentName)
+        startAttachTransaction(fragment, addCurrentToBackStack) {
+            replace(fragment)
         }
     }
 
     final override fun navigateTo(fragment: F, addCurrentToBackStack: Boolean) {
-        startTransaction {
-            handleAnimationSet(fragment.animationSet)
-                .add(rootId, fragment, fragment.fragmentName)
-                .handleBackStack(addCurrentToBackStack, currentFragment?.fragmentName)
+        startAttachTransaction(fragment, addCurrentToBackStack) {
+            add(fragment)
         }
     }
 
     final override fun restartNavigationFrom(fragment: F) {
-        startTransaction {
-            handleAnimationSet(fragment.animationSet).replace(rootId, fragment)
+        startAttachTransaction(fragment, false) {
+            replace(fragment)
         }
     }
 
@@ -143,23 +198,20 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         startActivity(intent)
     }
 
-    open fun onFragmentAttached(fragment: F) {
-        Log.d(fragment.fragmentName, FRAGMENT_ATTACHED_MESSAGE)
-    }
-
     private fun popBackStack() {
         supportFragmentManager.popBackStack()
     }
 
     private fun reAttach(fragment: F) {
-        startTransaction {
-            replace(rootId, fragment.javaClass.newInstance().also { it.arguments = fragment.arguments }, fragment.fragmentName)
+        startAttachTransaction(fragment, false) {
+            replace(fragment.javaClass.newInstance().apply { arguments = fragment.arguments })
         }
     }
 
     private fun setUpBackStackListener() {
         supportFragmentManager.addOnBackStackChangedListener {
             notifyCurrentFragmentSelection()
+            onBackStackChanged()
         }
     }
 
@@ -167,16 +219,30 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         (currentFragment as? SelectionListener)?.onSelected()
     }
 
+    private fun startAttachTransaction(fragment: F, addCurrentToBackStack: Boolean, transaction: FragmentTransaction.() -> FragmentTransaction) {
+
+        startTransaction {
+            handleAnimationSet(fragment.animationSet)
+                .transaction()
+                .handleBackStack(addCurrentToBackStack, currentFragment?.fragmentName)
+        }
+
+        onFragmentAttached(fragment)
+
+    }
+
     private fun startTransaction(transaction: FragmentTransaction.() -> FragmentTransaction) {
         supportFragmentManager.inTransaction(transaction)
     }
 
+    private fun FragmentTransaction.add(fragment: F): FragmentTransaction
+        = add(rootId, fragment, fragment.fragmentName)
+
+    private fun FragmentTransaction.replace(fragment: F): FragmentTransaction
+        = replace(rootId, fragment, fragment.fragmentName)
+
     companion object {
         private const val TAG = "NavigationActivity"
-        private const val VIEW_CREATED_MESSAGE = "View Created"
-        private const val ACTIVITY_CREATED_MESSAGE = "Activity Created"
-        private const val ACTIVITY_LAUNCHED_MESSAGE = "Activity Launched"
-        private const val FRAGMENT_ATTACHED_MESSAGE = "Navigation Fragment Attached"
     }
 
 }

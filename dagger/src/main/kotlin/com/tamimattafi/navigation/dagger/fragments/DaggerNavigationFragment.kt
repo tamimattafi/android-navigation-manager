@@ -30,8 +30,8 @@ abstract class DaggerNavigationFragment : BaseNavigationFragment(), NavigationGu
         super.onAttach(context)
     }
 
-    final override fun androidInjector(): AndroidInjector<Any?> {
-        return androidInjector
-    }
+    final override fun androidInjector(): AndroidInjector<Any?>
+        = androidInjector
+
 
 }
