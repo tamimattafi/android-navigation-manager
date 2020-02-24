@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.tamimattafi.navigation.core.NavigationContract.*
 import com.tamimattafi.navigation.core.fragments.BaseNavigationFragment
@@ -183,9 +184,13 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     }
 
     final override fun restartNavigationFrom(fragment: F) {
+        supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
         startAttachTransaction(fragment, false) {
-            replace(fragment)
+            replace(rootId, fragment)
         }
+
+        baseFragment = fragment
     }
 
     final override fun remove(fragment: F) {
