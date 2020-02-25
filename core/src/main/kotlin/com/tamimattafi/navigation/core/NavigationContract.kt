@@ -12,12 +12,14 @@ interface NavigationContract {
     */
     interface NavigationGuest<F: BaseNavigationFragment, N: Navigator<F>> {
 
+
         /**
         * Instance of the navigation host activity that will be provided each time the fragment was attached
         * An injection module should be provided for Dagger in order to make it able to provide this dependency
         * For more information, visit our github page: https://github.com/tamimattafi/android-dagger-navigationmanager
         */
         var navigator : N
+
 
         /**
         * Short-cut for navigating to a fragment that can be used as myFragment.navigate(attachToBackStack)
@@ -26,6 +28,7 @@ interface NavigationContract {
             navigator.navigateTo(this, attachToBackStack)
         }
 
+
         /**
         * Short-cut for switching to a fragment that can be used as myFragment.switch(attachToBackStack)
         */
@@ -33,12 +36,14 @@ interface NavigationContract {
             navigator.switchTo(this, attachToBackStack)
         }
 
+
         /**
         * Short-cut for restarting navigation from a fragment that can be used as myFragment.restartNavigation()
         */
         fun F.restartNavigation() {
             navigator.restartNavigationFrom(this)
         }
+
 
         /**
         * Short-cut for restarting the current fragment if it's visible to the user
@@ -48,11 +53,13 @@ interface NavigationContract {
         }
     }
 
+
     /**
     * API exposed to child fragments by the host activity
     * Every fragment will have an instance of this API
     */
     interface Navigator<F: BaseNavigationFragment> {
+
 
         /**
         * Current visible child fragment
@@ -60,11 +67,13 @@ interface NavigationContract {
         */
         val currentFragment: F?
 
+
         /**
         * Current base fragment
         * If no base fragment is attached, a null will be returned instead
         */
         var baseFragment: F?
+
 
         /**
         * Attaches a new fragment on top of the current fragment without replacing it,
@@ -82,6 +91,7 @@ interface NavigationContract {
             addCurrentToBackStack: Boolean = true
         )
 
+
         /**
         * Attaches a new fragment replacing the current one,
         * Which means that the bottom fragment will be destroyed and it's data will be cleared from memory.
@@ -97,6 +107,7 @@ interface NavigationContract {
             addCurrentToBackStack: Boolean = true
         )
 
+
         /**
         * Removes this fragment and popup back-stack,
         * Which means that if the user is viewing an other fragment and wants to navigate back, this fragment will be skipped.
@@ -105,6 +116,7 @@ interface NavigationContract {
         * @param fragment (required): the desired fragment to be switched to (required)
         */
         fun remove(fragment: F)
+
 
         /**
         * Replaces base fragment and popup the back-stack
@@ -117,6 +129,7 @@ interface NavigationContract {
             fragment: F
         )
 
+
         /**
         * Restarts the current child fragment, if no child fragment is attached, it will restart
         * the base fragment.
@@ -125,11 +138,13 @@ interface NavigationContract {
         */
         fun restartCurrentFragment()
 
+
         /**
         * Triggers activity onBackPress method
         * It is used for navigation buttons such as cancel, back, previous etc
         */
         fun performBackPress()
+
 
         /**
         * Changes the current activity result receive to this instance
@@ -139,21 +154,49 @@ interface NavigationContract {
         */
         fun setActivityReceiver(resultReceiver: ActivityResultReceiver)
 
+
         /**
         * Starts an activity for a result
         * It is used for picking files, or recording audio etc
         *
-        * @param intent (required): The intent that will start the activity
+        * @param intent (required): The intent that will start the activity for result
         * @param requestCode (required): The code that will be sent with the request and returned later to ActivityResultReceiver for checking
         */
         fun requestActivityForResult(intent: Intent, requestCode: Int)
+
 
         /**
         * This method will finish and restart the navigation host activity
         * It's used to apply new settings such as themes, localization language etc
         */
         fun restartActivity()
+
+
+        /**
+        * This method will finish the navigation host activity
+        */
+        fun finishActivity()
+
+
+        /**
+        * This method will open a new activity
+        *
+        * @param intent (required): The intent that will start the activity
+        */
+        fun openActivity(intent: Intent)
+
+
+        /**
+        * This method will start a service
+        *
+        * @param intent (required): The intent that will start the service
+        * @param foreground (default set to true): If set to true, the service will be started in foreground*
+        * Note that your service will be started by default in background if the SDK level is less than Oreo
+        */
+        fun launchService(intent: Intent, foreground: Boolean = false)
+
     }
+
 
     /**
 	* If this interface is implemented by the current visible fragment, any back press will call its onBackPressed() instead of activity's one.
@@ -163,6 +206,7 @@ interface NavigationContract {
         fun onBackPressed(): Boolean
     }
 
+
     /**
     * If this interface is implemented by a fragment, onSelected() will be called when a navigation to that fragment happens.
     * be careful from using any view components because they might still be null when this method is called
@@ -171,15 +215,17 @@ interface NavigationContract {
         fun onSelected()
     }
 
+
     /**
     * If the fragment is the current ActivityResultReceiver of the navigator, each time a call back returns from
     * startActivityForResult, this fragment's fun onReceiveActivityResult(requestCode, resultCode, data) will be triggered
-    *
-    * @param requestCode: the code sent with the request
-    * @param resultCode: the code determining whether the call back is successful or not
-    * @param data: the returned data from the call back
     */
     interface ActivityResultReceiver {
+        /**
+        * @param requestCode: the code sent with the request
+        * @param resultCode: the code determining whether the call back is successful or not
+        * @param data: the returned data from the call back
+        */
         fun onReceiveActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     }
 }

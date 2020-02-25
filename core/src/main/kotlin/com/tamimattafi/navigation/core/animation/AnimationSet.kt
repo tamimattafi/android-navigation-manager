@@ -70,7 +70,7 @@ class AnimationSet() {
 
         }
 
-        var DEFAULT: AnimationSet = AnimationSet()
+        var DEFAULT: AnimationSet? = AnimationSet()
 
         val SLIDE_LEFT: AnimationSet
         get() = AnimationSet(

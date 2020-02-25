@@ -3,6 +3,9 @@
 package com.tamimattafi.navigation.core.activities
 
 import android.content.Intent
+import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.O
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.CallSuper
@@ -151,6 +154,20 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         (currentFragment as? BackPressController)?.let {
             if (it.onBackPressed()) super.onBackPressed()
         } ?: super.onBackPressed()
+    }
+
+    final override fun finishActivity() {
+        finish()
+    }
+
+    final override fun openActivity(intent: Intent) {
+        startActivity(intent)
+    }
+
+    final override fun launchService(intent: Intent, foreground: Boolean) {
+        if (foreground && SDK_INT >= O) {
+            startForegroundService(intent)
+        } else startService(intent)
     }
 
     final override fun performBackPress() {
