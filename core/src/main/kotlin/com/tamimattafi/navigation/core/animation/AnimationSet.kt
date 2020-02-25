@@ -22,6 +22,10 @@ class AnimationSet() {
     var popExitAnimation: Int = pop_exit
     private set
 
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
+    }
+
     constructor(enterAnimation: Int, exitAnimation: Int, popEnterAnimation: Int, popExitAnimation: Int): this() {
         this.enterAnimation = enterAnimation
         this.exitAnimation = exitAnimation
@@ -72,21 +76,25 @@ class AnimationSet() {
 
         var DEFAULT: AnimationSet? = AnimationSet()
 
-        val SLIDE_LEFT: AnimationSet
-        get() = AnimationSet(
-            enter,
-            exit,
-            pop_enter,
-            pop_exit
-        )
+        val SLIDE_LEFT: AnimationSet by lazy {
+            AnimationSet(
+                enter,
+                exit,
+                pop_enter,
+                pop_exit
+            )
+        }
 
-        val SLIDE_RIGHT: AnimationSet
-        get() = AnimationSet(
-            pop_enter,
-            pop_exit,
-            enter,
-            exit
-        )
+        val SLIDE_RIGHT: AnimationSet by lazy {
+            AnimationSet(
+                pop_enter,
+                pop_exit,
+                enter,
+                exit
+            )
+        }
+
+        val NO_ANIMATION: AnimationSet? = null
 
     }
 }
