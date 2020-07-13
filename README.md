@@ -61,7 +61,7 @@ dependencies {
 ```
 
 # Docs
-The code is well documented. A quick reading [here](https://github.com/tamimattafi/android-navigation-manager/blob/master/core/src/main/java/com/tamimattafi/navigation/core/NavigationContract.kt) would make everything clear to you!
+The code is well documented. A quick reading [here](https://github.com/tamimattafi/android-navigation-manager/blob/master/core/src/main/kotlin/com/tamimattafi/navigation/core/NavigationContract.kt) would make everything clear to you!
 
 
 # Happy coding!
