@@ -142,10 +142,10 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         onViewCreated(savedInstanceState)
     }
 
-    final override fun restartCurrentFragment() {
+    final override fun restartCurrentFragment(attachToBackStack: Boolean) {
         (currentFragment ?: baseFragment)?.let { fragment ->
             remove(fragment)
-            reAttach(fragment)
+            reAttach(fragment, attachToBackStack)
         }
     }
 
@@ -211,8 +211,11 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     }
 
     final override fun remove(fragment: F) {
-        startTransaction { remove(fragment) }
-        popBackStack()
+        if (fragment == currentFragment) {
+            popBackStack()
+        } else startTransaction {
+            remove(fragment)
+        }
     }
 
     final override fun restartActivity() {
@@ -224,8 +227,8 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         supportFragmentManager.popBackStack()
     }
 
-    private fun reAttach(fragment: F) {
-        startAttachTransaction(fragment, false) {
+    private fun reAttach(fragment: F, addCurrentToBackStack: Boolean) {
+        startAttachTransaction(fragment, addCurrentToBackStack) {
             replace(fragment.javaClass.newInstance().apply { arguments = fragment.arguments })
         }
     }

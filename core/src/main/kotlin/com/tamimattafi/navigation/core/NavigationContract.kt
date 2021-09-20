@@ -3,7 +3,6 @@ package com.tamimattafi.navigation.core
 import android.content.Intent
 import com.tamimattafi.navigation.core.fragments.BaseNavigationFragment
 
-
 interface NavigationContract {
 
     /**
@@ -48,7 +47,7 @@ interface NavigationContract {
         /**
         * Short-cut for restarting the current fragment if it's visible to the user
         */
-        fun restartIfVisible() {
+        fun restartIfVisible(attachToBackStack: Boolean = false) {
             navigator.restartCurrentFragment()
         }
     }
@@ -136,7 +135,7 @@ interface NavigationContract {
         * This method is used when you want a fresh instance of the current fragment with fresh dependencies.
         * All arguments passed to this fragment will be saved
         */
-        fun restartCurrentFragment()
+        fun restartCurrentFragment(attachToBackStack: Boolean = true)
 
 
         /**
