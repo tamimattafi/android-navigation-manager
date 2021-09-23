@@ -142,10 +142,10 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         onViewCreated(savedInstanceState)
     }
 
-    final override fun restartCurrentFragment(attachToBackStack: Boolean) {
+    final override fun restartCurrentFragment(attachToBackStack: Boolean, withAnimation: Boolean) {
         (currentFragment ?: baseFragment)?.let { fragment ->
             remove(fragment)
-            reAttach(fragment, attachToBackStack)
+            reAttach(fragment, attachToBackStack, withAnimation)
         }
     }
 
@@ -188,22 +188,30 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         currentResultReceiver?.onReceiveActivityResult(requestCode, resultCode, data)
     }
 
-    final override fun switchTo(fragment: F, addCurrentToBackStack: Boolean) {
-        startAttachTransaction(fragment, addCurrentToBackStack) {
+    final override fun switchTo(
+        fragment: F,
+        addCurrentToBackStack: Boolean,
+        withAnimation: Boolean
+    ) {
+        startAttachTransaction(fragment, addCurrentToBackStack, withAnimation) {
             replace(fragment)
         }
     }
 
-    final override fun navigateTo(fragment: F, addCurrentToBackStack: Boolean) {
-        startAttachTransaction(fragment, addCurrentToBackStack) {
+    final override fun navigateTo(
+        fragment: F,
+        addCurrentToBackStack: Boolean,
+        withAnimation: Boolean
+    ) {
+        startAttachTransaction(fragment, addCurrentToBackStack, withAnimation) {
             add(fragment)
         }
     }
 
-    final override fun restartNavigationFrom(fragment: F) {
+    final override fun restartNavigationFrom(fragment: F, withAnimation: Boolean) {
         supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
-        startAttachTransaction(fragment, false) {
+        startAttachTransaction(fragment, false, withAnimation) {
             replace(rootId, fragment)
         }
 
@@ -227,8 +235,12 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         supportFragmentManager.popBackStack()
     }
 
-    private fun reAttach(fragment: F, addCurrentToBackStack: Boolean) {
-        startAttachTransaction(fragment, addCurrentToBackStack) {
+    private fun reAttach(
+        fragment: F,
+        addCurrentToBackStack: Boolean,
+        withAnimation: Boolean
+    ) {
+        startAttachTransaction(fragment, addCurrentToBackStack, withAnimation) {
             replace(fragment.javaClass.newInstance().apply { arguments = fragment.arguments })
         }
     }
@@ -244,10 +256,15 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         (currentFragment as? SelectionListener)?.onSelected()
     }
 
-    private fun startAttachTransaction(fragment: F, addCurrentToBackStack: Boolean, transaction: FragmentTransaction.() -> FragmentTransaction) {
+    private fun startAttachTransaction(
+        fragment: F,
+        addCurrentToBackStack: Boolean,
+        withAnimation: Boolean,
+        transaction: FragmentTransaction.() -> FragmentTransaction
+    ) {
 
         startTransaction {
-            handleAnimationSet(fragment.animationSet)
+            handleAnimationSet(fragment.animationSet, withAnimation)
                 .transaction()
                 .handleBackStack(addCurrentToBackStack, currentFragment?.fragmentName)
         }

@@ -23,32 +23,41 @@ interface NavigationContract {
         /**
         * Short-cut for navigating to a fragment that can be used as myFragment.navigate(attachToBackStack)
         */
-        fun F.navigate(attachToBackStack: Boolean = false) {
-            navigator.navigateTo(this, attachToBackStack)
+        fun F.navigate(
+            attachToBackStack: Boolean = false,
+            withAnimation: Boolean = true
+        ) {
+            navigator.navigateTo(this, attachToBackStack, withAnimation)
         }
 
 
         /**
         * Short-cut for switching to a fragment that can be used as myFragment.switch(attachToBackStack)
         */
-        fun F.switch(attachToBackStack: Boolean = false) {
-            navigator.switchTo(this, attachToBackStack)
+        fun F.switch(
+            attachToBackStack: Boolean = false,
+            withAnimation: Boolean = true
+        ) {
+            navigator.switchTo(this, attachToBackStack, withAnimation)
         }
 
 
         /**
         * Short-cut for restarting navigation from a fragment that can be used as myFragment.restartNavigation()
         */
-        fun F.restartNavigation() {
-            navigator.restartNavigationFrom(this)
+        fun F.restartNavigation(withAnimation: Boolean = false) {
+            navigator.restartNavigationFrom(this, withAnimation)
         }
 
 
         /**
         * Short-cut for restarting the current fragment if it's visible to the user
         */
-        fun restartIfVisible(attachToBackStack: Boolean = false) {
-            navigator.restartCurrentFragment()
+        fun restartIfVisible(
+            attachToBackStack: Boolean = false,
+            withAnimation: Boolean = false
+        ) {
+            navigator.restartCurrentFragment(attachToBackStack, withAnimation)
         }
     }
 
@@ -87,7 +96,8 @@ interface NavigationContract {
         */
         fun navigateTo(
             fragment: F,
-            addCurrentToBackStack: Boolean = true
+            addCurrentToBackStack: Boolean = true,
+            withAnimation: Boolean = true
         )
 
 
@@ -103,7 +113,8 @@ interface NavigationContract {
         */
         fun switchTo(
             fragment: F,
-            addCurrentToBackStack: Boolean = true
+            addCurrentToBackStack: Boolean = true,
+            withAnimation: Boolean = true
         )
 
 
@@ -125,7 +136,8 @@ interface NavigationContract {
         * @param fragment (required): the desired fragment to be attached as base fragment (required).
         */
         fun restartNavigationFrom(
-            fragment: F
+            fragment: F,
+            withAnimation: Boolean = false
         )
 
 
@@ -135,7 +147,10 @@ interface NavigationContract {
         * This method is used when you want a fresh instance of the current fragment with fresh dependencies.
         * All arguments passed to this fragment will be saved
         */
-        fun restartCurrentFragment(attachToBackStack: Boolean = true)
+        fun restartCurrentFragment(
+            attachToBackStack: Boolean = true,
+            withAnimation: Boolean = false
+        )
 
 
         /**

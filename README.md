@@ -9,11 +9,8 @@ A Helper library for easy navigation between fragments.
 allprojects {
 
     repositories {
-	
         maven { url 'https://jitpack.io' }
-	
     }
-    
 }
 ```
 2. Add this to your dependencies in your App level build.gradle file:
@@ -21,9 +18,7 @@ allprojects {
 
 ```gradle
 dependencies {
-
     implementation "com.github.tamimattafi.android-navigation-manager:basic:$latest_version"
-    
 }
 ```
 
@@ -36,9 +31,7 @@ dependencies {
    
 ```gradle
 dependencies {
-
    implementation "com.github.tamimattafi.android-navigation-manager:core:$latest_version"
-    
 }
 ```
 
@@ -54,9 +47,7 @@ dependencies {
 
 ```gradle
 dependencies {
-
     implementation "com.github.tamimattafi.android-navigation-manager:dagger:$latest_version"
-      
 }
 ```
 
