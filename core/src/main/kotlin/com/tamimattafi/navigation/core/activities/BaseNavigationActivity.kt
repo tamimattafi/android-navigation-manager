@@ -218,7 +218,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     final override fun remove(fragment: F) {
         if (fragment == currentFragment) {
             popBackStack()
-        } else supportFragmentManager.commit {
+        } else commit {
             remove(fragment)
         }
     }
@@ -259,7 +259,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         withAnimation: Boolean,
         transaction: FragmentTransaction.() -> FragmentTransaction
     ) {
-        supportFragmentManager.commit {
+        commit {
             if (withAnimation) fragment.animationSet?.apply {
                 setCustomAnimations(
                     enterAnimation,
@@ -285,6 +285,14 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
 
     private fun FragmentTransaction.replace(fragment: F): FragmentTransaction
         = replace(rootId, fragment, fragment.fragmentName)
+
+    private fun commit(
+        allowStateLoss: Boolean = false,
+        body: FragmentTransaction.() -> Unit
+    ) {
+        val manager = currentFragment?.childFragmentManager ?: supportFragmentManager
+        manager.commit(allowStateLoss, body)
+    }
 
     companion object {
         private const val TAG = "NavigationActivity"

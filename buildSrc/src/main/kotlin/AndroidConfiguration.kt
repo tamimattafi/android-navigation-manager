@@ -3,5 +3,5 @@ object AndroidConfiguration {
     const val MIN_SDK_VERSION = 14
     const val TARGET_SDK_VERSION = 30
     const val VERSION_CODE = 39
-    const val VERSION_NAME = "2.1.5"
+    const val VERSION_NAME = "2.1.6"
 }
