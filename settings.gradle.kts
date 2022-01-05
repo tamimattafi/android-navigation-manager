@@ -4,5 +4,6 @@ rootProject.name = "NavigationManager"
 include (
     ":dagger",
     ":basic",
-    ":core"
+    ":core",
+    ":sample"
 )
