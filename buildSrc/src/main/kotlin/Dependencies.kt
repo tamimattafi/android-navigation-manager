@@ -2,6 +2,7 @@ object Dependencies {
     const val KOTLIN = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.KOTLIN_VERSION}"
     const val APPCOMPAT = "androidx.appcompat:appcompat:${Versions.APPCOMPAT_VERSION}"
     const val KTX = "androidx.core:core-ktx:${Versions.KTX_VERSION}"
+    const val FRAGMENT_KTX = "androidx.fragment:fragment-ktx:${Versions.FRAGMENT_KTX_VERSION}"
 
     const val DAGGER = "com.google.dagger:dagger:${Versions.DAGGER_VERSION}"
     const val DAGGER_COMPILLER = "com.google.dagger:dagger-compiler:${Versions.DAGGER_VERSION}"

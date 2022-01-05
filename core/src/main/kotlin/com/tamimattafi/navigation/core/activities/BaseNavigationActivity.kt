@@ -3,7 +3,6 @@
 package com.tamimattafi.navigation.core.activities
 
 import android.content.Intent
-import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.os.Bundle
@@ -12,11 +11,9 @@ import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import com.tamimattafi.navigation.core.NavigationContract.*
 import com.tamimattafi.navigation.core.fragments.BaseNavigationFragment
-import com.tamimattafi.navigation.core.utils.NavigationUtils.handleAnimationSet
-import com.tamimattafi.navigation.core.utils.NavigationUtils.handleBackStack
-import com.tamimattafi.navigation.core.utils.NavigationUtils.inTransaction
 import com.tamimattafi.navigation.core.values.Values.ACTIVITY_CREATED_MESSAGE
 import com.tamimattafi.navigation.core.values.Values.ACTIVITY_LAUNCHED_MESSAGE
 import com.tamimattafi.navigation.core.values.Values.BACK_STACK_CHANGE_MESSAGE
@@ -221,7 +218,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     final override fun remove(fragment: F) {
         if (fragment == currentFragment) {
             popBackStack()
-        } else startTransaction {
+        } else supportFragmentManager.commit {
             remove(fragment)
         }
     }
@@ -262,19 +259,25 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         withAnimation: Boolean,
         transaction: FragmentTransaction.() -> FragmentTransaction
     ) {
+        supportFragmentManager.commit {
+            if (withAnimation) fragment.animationSet?.apply {
+                setCustomAnimations(
+                    enterAnimation,
+                    exitAnimation,
+                    popEnterAnimation,
+                    popExitAnimation
+                )
+            }
 
-        startTransaction {
-            handleAnimationSet(fragment.animationSet, withAnimation)
-                .transaction()
-                .handleBackStack(addCurrentToBackStack, currentFragment?.fragmentName)
+            transaction()
+            setReorderingAllowed(true)
+
+            if (addCurrentToBackStack) {
+                addToBackStack(currentFragment?.fragmentName)
+            }
         }
 
         onFragmentAttached(fragment)
-
-    }
-
-    private fun startTransaction(transaction: FragmentTransaction.() -> FragmentTransaction) {
-        supportFragmentManager.inTransaction(transaction)
     }
 
     private fun FragmentTransaction.add(fragment: F): FragmentTransaction
@@ -286,5 +289,4 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     companion object {
         private const val TAG = "NavigationActivity"
     }
-
 }

@@ -10,5 +10,4 @@ dependencies {
     implementation(Dependencies.DAGGER_ANDROID_SUPPORT)
     kapt(Dependencies.DAGGER_COMPILLER)
     kapt(Dependencies.DAGGER_ANDROID_PROCESSOR)
-
 }
