@@ -259,7 +259,12 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         withAnimation: Boolean,
         transaction: FragmentTransaction.() -> FragmentTransaction
     ) {
+        val oldFragment = supportFragmentManager.findFragmentByTag(fragment.fragmentName)
         supportFragmentManager.commit {
+            if (oldFragment != null) {
+                remove(oldFragment)
+            }
+
             if (withAnimation) fragment.animationSet?.apply {
                 setCustomAnimations(
                     enterAnimation,
@@ -272,7 +277,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
             transaction()
             setReorderingAllowed(true)
 
-            if (addCurrentToBackStack) {
+            if (addCurrentToBackStack && oldFragment != currentFragment) {
                 addToBackStack(currentFragment?.fragmentName)
             }
         }
