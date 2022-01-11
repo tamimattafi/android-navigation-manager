@@ -206,9 +206,16 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     }
 
     final override fun restartNavigationFrom(fragment: F, withAnimation: Boolean) {
-        supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        supportFragmentManager.popBackStackImmediate(
+            null,
+            FragmentManager.POP_BACK_STACK_INCLUSIVE
+        )
 
-        startAttachTransaction(fragment, false, withAnimation) {
+        startAttachTransaction(
+            fragment,
+            false,
+            withAnimation
+        ) {
             replace(rootId, fragment)
         }
 
@@ -217,7 +224,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
 
     final override fun remove(fragment: F) {
         if (fragment == currentFragment) {
-            popBackStack()
+            popBackStackImmediate()
         } else supportFragmentManager.commit {
             remove(fragment)
         }
@@ -228,8 +235,8 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         startActivity(intent)
     }
 
-    private fun popBackStack() {
-        supportFragmentManager.popBackStack()
+    private fun popBackStackImmediate() {
+        supportFragmentManager.popBackStackImmediate()
     }
 
     private fun reAttach(
@@ -237,8 +244,13 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         addCurrentToBackStack: Boolean,
         withAnimation: Boolean
     ) {
-        startAttachTransaction(fragment, addCurrentToBackStack, withAnimation) {
-            replace(fragment.javaClass.newInstance().apply { arguments = fragment.arguments })
+        val newFragment = fragment.javaClass.newInstance().apply { arguments = fragment.arguments }
+        startAttachTransaction(
+            fragment,
+            addCurrentToBackStack,
+            withAnimation
+        ) {
+            replace(newFragment)
         }
     }
 
@@ -260,6 +272,12 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         transaction: FragmentTransaction.() -> FragmentTransaction
     ) {
         supportFragmentManager.commit {
+            setReorderingAllowed(true)
+
+            if (!addCurrentToBackStack) {
+                currentFragment?.let(::remove)
+            }
+
             if (withAnimation) fragment.animationSet?.apply {
                 setCustomAnimations(
                     enterAnimation,
@@ -270,11 +288,7 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
             }
 
             transaction()
-            setReorderingAllowed(true)
-
-            if (addCurrentToBackStack) {
-                addToBackStack(currentFragment?.fragmentName)
-            }
+            addToBackStack(fragment.fragmentName)
         }
 
         onFragmentAttached(fragment)
