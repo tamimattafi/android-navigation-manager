@@ -148,9 +148,11 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
 
     @CallSuper
     override fun onBackPressed() {
-        (currentFragment as? BackPressController)?.let {
-            if (it.onBackPressed()) super.onBackPressed()
-        } ?: super.onBackPressed()
+        val backPressController = currentFragment as? BackPressController
+        if (backPressController != null) {
+            val shouldPerformBackPress = backPressController.onBackPressed()
+            if (shouldPerformBackPress) handleBackPress()
+        } else handleBackPress()
     }
 
     final override fun finishActivity() {
@@ -233,6 +235,11 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     final override fun restartActivity() {
         finish()
         startActivity(intent)
+    }
+
+    private fun handleBackPress() {
+        if (currentFragment != baseFragment) super.onBackPressed()
+        else finishActivity()
     }
 
     private fun popBackStackImmediate() {
