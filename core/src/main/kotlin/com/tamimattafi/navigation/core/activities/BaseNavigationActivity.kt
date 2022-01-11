@@ -149,10 +149,10 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
     @CallSuper
     override fun onBackPressed() {
         val backPressController = currentFragment as? BackPressController
-        if (backPressController != null) {
-            val shouldPerformBackPress = backPressController.onBackPressed()
-            if (shouldPerformBackPress) handleBackPress()
-        } else handleBackPress()
+            ?: return handleBackPress()
+
+        val shouldPerformBackPress = backPressController.onBackPressed()
+        if (shouldPerformBackPress) handleBackPress()
     }
 
     final override fun finishActivity() {
@@ -278,12 +278,12 @@ abstract class BaseNavigationActivity<F: BaseNavigationFragment> : AppCompatActi
         withAnimation: Boolean,
         transaction: FragmentTransaction.() -> FragmentTransaction
     ) {
+        if (!addCurrentToBackStack) {
+            popBackStackImmediate()
+        }
+
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-
-            if (!addCurrentToBackStack) {
-                currentFragment?.let(::remove)
-            }
 
             if (withAnimation) fragment.animationSet?.apply {
                 setCustomAnimations(
